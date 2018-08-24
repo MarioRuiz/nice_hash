@@ -69,7 +69,7 @@ my_hash={
     wagers: ['34AAB', 'dfffDD', '33499A'],
     country: {default: 'Spain', correct: ["Spain", "Iceland", "Serbia", "Denmark", "Canada", "Italy", "Austria"].join("|")}, #one of these values
     mobilePhone: {default: '(987)654321', correct: ['(', :'3:N', ')', :'6-8:N']},
-    sex: :"male|female", #any of these values
+    sex: :"male|female|other", #any of these values
     display: true
 }
 ```
@@ -87,13 +87,13 @@ Explanations of the different fields:
     city: correct: 'London' or 'Rome'
     country: correct: one of these values "Spain", "Iceland", "Serbia", "Denmark", "Canada", "Italy", "Austria"
     mobilePhone: correct: a sting pattern with one of the next: "(nnn) nnnnnn", "(nnn) nnnnnnn", "(nnn) nnnnnnnn"
-    sex: 'male' or 'female'
+    sex: 'male' or 'female' or 'other'
 
 So in case you want to assign to a key a string pattern value like for example in loginame, you need to specify the string pattern as a symbol :"5-10:/xn/"
 
 You can also supply an array of strings and string patterns, like on mobilePhone.correct: ['(', :'3:N', ')', :'6-8:N']}
 
-Also you can specify to select one of the values you want by separating them with |, like for example on sex field: "male|female"
+Also you can specify to select one of the values you want by separating them with |, like for example on sex field: "male|female|other"
 
 ### How to access the different keys
 
