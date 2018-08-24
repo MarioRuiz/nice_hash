@@ -167,7 +167,7 @@ On this example new_hash will contain:
     wagers: ['34AAB', 'dfffDD', '33499A'],
     country: ["Spain", "Iceland", "Serbia", "Denmark", "Canada", "Italy", "Austria"].join("|"), #one of these values
     mobilePhone: ['(', :'3:N', ')', :'6-8:N'],
-    sex: :"male|female", #any of these values
+    sex: :"male|female|other", #any of these values
     display: true
 }
 ```
