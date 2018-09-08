@@ -95,6 +95,15 @@ You can also supply an array of strings and string patterns, like on mobilePhone
 
 Also you can specify to select one of the values you want by separating them with |, like for example on sex field: "male|female|other"
 
+In case you want one pattern to be generated with unique values, so never repeat the same value for that particular pattern, use a symbol object pattern and add to the end of the pattern the symbol: &
+
+```ruby
+
+    loginame: :"5-10:/xn/&", 
+
+```
+
+
 ### How to access the different keys
 
 You can access the keys of the hash like always, but now we added to the Hash class the posibility of accessing it using:
