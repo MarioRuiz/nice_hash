@@ -1,5 +1,49 @@
-class Array
+class String
+  ###########################################################################
+  #  In case the string is a json it will return the keys specified. the keys need to be provided as symbols
+  #  input:
+  #    keys:
+  #       1 value with key or an array of keys
+  #         In case the key supplied doesn't exist in the hash then it will be returned nil for that one
+  #  output:
+  #    if keys given: a hash of (keys, values) or the value, if the key is found more than once in the json string, then it will be return a hash op arrays
+  #    if no keys given, an empty hash
+  ###########################################################################
+  def json(*keys)
+    require 'json'
+    feed_symbols = JSON.parse(self, symbolize_names: true)
+    result = {}
+    if !keys.empty?
+      result_tmp = if keys[0].is_a?(Symbol)
+                     NiceHash.get_values(feed_symbols, keys)
+                   else
+                     {}
+                   end
 
+      if result_tmp.size == 1
+        result = if result_tmp.values.is_a?(Array) && (result_tmp.values.size == 1)
+                   result_tmp.values[0]
+                 else
+                   result_tmp.values
+                 end
+      else
+        result_tmp.each do |key, value|
+          result[key] = if (value.is_a?(Array) || value.is_a?(Hash)) && (value.size == 1)
+                          value[0]
+                        else
+                          value
+                        end
+        end
+      end
+
+    else
+      result = feed_symbols
+    end
+    result
+  end
+end
+
+class Array
   ###########################################################################
   # Stores a value on the location indicated
   # input:
@@ -10,14 +54,28 @@ class Array
   #   my_array.bury([2, 1, :original],"the value to set") #array of array of hash
   ###########################################################################
   def bury(where, value)
-    me=self
-    where[0..-2].each {|key|
-      me=me[key]
-    }
-    me[where[-1]]=value
+    me = self
+    where[0..-2].each do |key|
+      me = me[key]
+    end
+    me[where[-1]] = value
+  end
+
+  ###########################################################################
+  #  In case of an array of json strings will return the keys specified. The keys need to be provided as symbols
+  #  input:
+  #    keys:
+  #       1 value with key or an array of keys
+  #         In case the key supplied doesn't exist in the hash then it will be return nil for that one
+  #  output:
+  #    if keys given: a hash of (keys, values) or the value, if the key is found more than once in the json string, then it will be return a hash of arrays
+  #    if no keys given, an empty hash
+  ###########################################################################
+  def json(*keys)
+    json_string = "[#{join(',')}]"
+    json_string.json(*keys)
   end
 end
-
 
 class Hash
   ###########################################################################
@@ -33,13 +91,11 @@ class Hash
   #   my_hash.products[1].price.wrong="AAAAA"
   ###########################################################################
   def method_missing(m, *arguments, &block)
-    if m[0]=='_'
-      m=m[1..-1].to_sym
-    end
-    if self.keys.include?(m)
+    m = m[1..-1].to_sym if m[0] == '_'
+    if key?(m)
       self[m]
-    elsif m.to_s[-1]=="="
-      self[m.to_s.chop.to_sym]=arguments[0]
+    elsif m.to_s[-1] == '='
+      self[m.to_s.chop.to_sym] = arguments[0]
     else
       super
     end
@@ -55,15 +111,15 @@ class Hash
   #   my_hash.bury([:original, 1, :doom],"the value to set") #hash of array of hash
   ###########################################################################
   def bury(where, value)
-    me=self
-    where[0..-2].each {|key|
-      me=me[key]
-    }
-    key=where[-1]
-    key=[key] unless where[-1].kind_of?(Array) # for the case same value for different keys, for example pwd1, pwd2, pwd3
-    key.each {|k|
-      me[k]=value
-    }
+    me = self
+    where[0..-2].each do |key|
+      me = me[key]
+    end
+    key = where[-1]
+    key = [key] unless where[-1].is_a?(Array) # for the case same value for different keys, for example pwd1, pwd2, pwd3
+    key.each do |k|
+      me[k] = value
+    end
   end
 
   ###########################################################################
@@ -82,7 +138,7 @@ class Hash
   # More info: NiceHash.generate
   # alias: gen
   ###########################################################################
-  def generate(select_hash_key=nil, expected_errors: [], **synonyms)
+  def generate(select_hash_key = nil, expected_errors: [], **synonyms)
     NiceHash.generate(self, select_hash_key, expected_errors: expected_errors, **synonyms)
   end
 
@@ -91,7 +147,7 @@ class Hash
   # More info: NiceHash.validate
   # alias: val
   ###########################################################################
-  def validate(select_hash_key=nil, values_hash_to_validate)
+  def validate(select_hash_key = nil, values_hash_to_validate)
     NiceHash.validate([self, select_hash_key], values_hash_to_validate, only_patterns: false)
   end
 
@@ -99,7 +155,7 @@ class Hash
   # Validates a given values_hash_to_validate with string patterns
   # More info: NiceHash.validate
   ###########################################################################
-  def validate_patterns(select_hash_key=nil, values_hash_to_validate)
+  def validate_patterns(select_hash_key = nil, values_hash_to_validate)
     NiceHash.validate([self, select_hash_key], values_hash_to_validate, only_patterns: true)
   end
 
@@ -119,9 +175,15 @@ class Hash
     NiceHash.select_fields(self, *select_hash_key)
   end
 
+  ###########################################################################
+  # Get values of the keys supplied from the Hash structure.
+  # More info: NiceHash.get_values
+  ###########################################################################
+  def get_values(*keys)
+    NiceHash.get_values(self, keys)
+  end
 
-  alias_method :gen, :generate
-  alias_method :val, :validate
-  alias_method :patterns, :pattern_fields
-
+  alias gen generate
+  alias val validate
+  alias patterns pattern_fields
 end

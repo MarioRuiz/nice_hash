@@ -8,6 +8,8 @@ You can easily generates all the hashes you want following the criteria you spec
 
 Many other features coming to Hash class like the methods 'bury' or select_key, access the keys like methods: my_hash.my_key.other_key. You will be able to generate thousands of different hashes just declaring one and test easily APIs based on JSON for example.
 
+You can also parse and filter a json string very easily.
+
 To generate the strings following a pattern take a look at the documentation for string_pattern gem: https://github.com/MarioRuiz/string_pattern
 
 ## Installation
@@ -103,6 +105,16 @@ In case you want one pattern to be generated with unique values, so never repeat
 
 ```
 
+Also if you have a JSON string you want to parse it and get the values of certain keys you can use the json method we added to nice_hash:
+
+```ruby
+    my_json_string="{\"id\":344,\"customer\":{\"name\":\"Peter Smith\",\"phone\":334334333},\"tickets\":[{\"idt\":345,\"name\":\"myFavor1\"},{\"idt\":3123},{\"idt\":3145,\"name\":\"Special ticket\"}]}"
+    puts my_json_string.json(:idt)
+    #> [345, 3123, 3145]
+
+    puts my_json_string.json(:idt, :name)
+    #> {:name=>["Peter Smith", ["myFavor1", "Special ticket"]], :idt=>[345, 3123, 3145]}
+```
 
 ### How to access the different keys
 
@@ -135,6 +147,15 @@ By using the string_pattern gem you can generate single strings following the sp
     puts my_hash.loginame.generate #>s93owuvkh
     puts my_hash.mobilePhone.correct.generate #>(039)5669558
     puts my_hash._zip._correct.gen # gen is an alias for generate method #>84584
+```
+
+If you want to search for all the values of one or more keys use get_values method:
+
+```ruby
+new_hash = my_hash.generate
+puts new_hash.get_values(:address) #> {:address=>"21 Doom Av"}
+puts new_hash.get_values(:address, :zip) #> {:zip=>{:default=>"00000", :correct=>"42782"}, :address=>"21 Doom Av"}
+puts new_hash.get_values(:drawId) #> {:drawId=>["84914", "21158"]}
 ```
 
 ### Filtering / Selecting an specific key on the hash and subhashes
