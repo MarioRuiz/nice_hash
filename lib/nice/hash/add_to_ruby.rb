@@ -1,4 +1,19 @@
 class String
+  
+  ###########################################################################
+  # When comparing an string and an integer, float or nil, it will be automatically converted to string:
+  #   "300" == 300 #will return true
+  #   200.1=="200.1" #will return true
+  #   ""==nil #will return true
+  ###########################################################################
+  def ==(par)
+    if par.kind_of?(Integer) or par.nil? or par.kind_of?(Float) then
+      super(par.to_s())
+    else
+      super(par)
+    end
+  end
+
   ###########################################################################
   #  In case the string is a json it will return the keys specified. the keys need to be provided as symbols
   #  input:

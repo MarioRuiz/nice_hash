@@ -12,6 +12,8 @@ You can also parse and filter a json string very easily.
 
 To generate the strings following a pattern take a look at the documentation for string_pattern gem: https://github.com/MarioRuiz/string_pattern
 
+To use nice_hash on Http connections take a look at nice_http gem: https://github.com/MarioRuiz/nice_http
+
 ## Installation
 
 Add this line to your application's Gemfile:
