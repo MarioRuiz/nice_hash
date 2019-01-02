@@ -571,7 +571,7 @@ This is the output:
 ```
 
 
-#### Other useful methods
+### Other useful methods
 
 In case you need the time stamp, we added the method `stamp` to the `Time` class
 
