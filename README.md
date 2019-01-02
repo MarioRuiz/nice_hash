@@ -4,7 +4,7 @@
 
 NiceHash creates hashes following certain patterns so your testing will be much easier.
 
-You can easily generates all the hashes you want following the criteria you specify. 
+You can easily generate all the hashes you want following the criteria you specify. 
 
 Many other features coming to Hash class like the methods 'bury' or select_key, access the keys like methods: my_hash.my_key.other_key. You will be able to generate thousands of different hashes just declaring one and test easily APIs based on JSON for example.
 
@@ -534,6 +534,8 @@ array_of_hashes.each {|hash_with_one_wrong_field|
   res = my_hash.validate(:correct, hash_with_one_wrong_field)
 }
 ```
+
+Take a look at a full example: https://gist.github.com/MarioRuiz/824d7a462b62fd85f02c1a09455deefb
 
 ## Contributing
 
