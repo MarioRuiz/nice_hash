@@ -92,6 +92,39 @@ class Array
   end
 end
 
+require 'date'
+class Date
+  ###########################################################################
+  # It will generate a random date
+  # In case days is a Date it will generate until that date
+  # In case days is an Integer it will generate from the self date + the number of days specified
+  # examples:
+  #   puts Date.today.random(60) # random date from today to 60 days after
+  #   puts Date.strptime('01-09-2005', '%d-%m-%Y').random(100)
+  #   puts Date.new(2003,10,31).random(Date.today) #Random date from 2003/10/31 to today
+  ###########################################################################
+  def random(days)
+    if days.kind_of?(Date) then
+      dif_dates = self - (days+1)
+      date_result = self + rand(dif_dates)
+      return date_result
+    elsif days.kind_of?(Integer) then
+      date_result = self + rand(days+1)
+      return date_result
+    end
+  end
+
+end
+
+
+class Time
+  # It will return in the format: '%Y-%m-%dT%H:%M:%S.000Z'
+  # Example: puts Time.now.stamp
+  def stamp
+    return self.strftime('%Y-%m-%dT%H:%M:%S.000Z')
+  end
+end
+
 class Hash
   ###########################################################################
   # Returns the value of the key specified in case doesn't exist a Hash method with the same name

@@ -537,6 +537,30 @@ array_of_hashes.each {|hash_with_one_wrong_field|
 
 Take a look at a full example: https://gist.github.com/MarioRuiz/824d7a462b62fd85f02c1a09455deefb
 
+#### Other useful methods
+
+In case you need the time stamp, we added the method `stamp` to the `Time` class
+
+```ruby
+    puts Time.now.stamp
+    #> 2019-01-02T11:03:23.000Z
+```
+
+In class `Date` we added a very handy `random` method you can use to generate random dates.
+
+```ruby
+    # random date from today to 60 days after
+    puts Date.today.random(60)
+    
+    # random date from 01-09-2005 to 100 days later
+    puts Date.strptime('01-09-2005', '%d-%m-%Y').random(100)
+
+    # random date from 2003/10/31 to today
+    puts Date.new(2003,10,31).random(Date.today) 
+```
+
+
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/marioruiz/nice_hash.
