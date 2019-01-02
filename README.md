@@ -374,7 +374,7 @@ pattern_fields_on_correct contains:
 ```
 
 
-#### dig and bury Hash methods
+### dig and bury Hash methods
 In case you want to access the values on a hash structure by using the key array location, you can use the 'dig' method on the Hash class:
 
 ```ruby
