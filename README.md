@@ -537,13 +537,47 @@ array_of_hashes.each {|hash_with_one_wrong_field|
 
 Take a look at a full example: https://gist.github.com/MarioRuiz/824d7a462b62fd85f02c1a09455deefb
 
+### Adding other values on real time when calling `generate` method
+
+If you need a value to be supplied for your key on real time everytime you call the `generate` method you can use `lambda`
+
+```ruby
+    my_hash = {
+        loginname: :"10:Ln",
+        datetime: lambda {
+            Time.now.stamp
+        },
+        other: Time.now.stamp
+    }
+
+    pp my_hash.gen
+    sleep 0.3
+    pp my_hash.gen
+
+```
+
+AS you can see in this example the value of the field `datetime` is different every time we generate the hash, but the value of the field `other` is generated the first time and it doesn't change later.
+
+This is the output:
+
+```
+{:loginname=>"dQ1gwPvHHZ",
+ :datetime=>"2019-01-02T13:41:05.536",
+ :other=>"2019-01-02T13:41:05.536"}
+
+{:loginname=>"WUCnWJmm0o",
+ :datetime=>"2019-01-02T13:41:05.836",
+ :other=>"2019-01-02T13:41:05.536"}
+```
+
+
 #### Other useful methods
 
 In case you need the time stamp, we added the method `stamp` to the `Time` class
 
 ```ruby
     puts Time.now.stamp
-    #> 2019-01-02T11:03:23.000Z
+    #> 2019-01-02T11:03:23.620
 ```
 
 In class `Date` we added a very handy `random` method you can use to generate random dates.

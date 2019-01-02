@@ -118,10 +118,10 @@ end
 
 
 class Time
-  # It will return in the format: '%Y-%m-%dT%H:%M:%S.000Z'
+  # It will return in the format: '%Y-%m-%dT%H:%M:%S.%L'
   # Example: puts Time.now.stamp
   def stamp
-    return self.strftime('%Y-%m-%dT%H:%M:%S.000Z')
+    return self.strftime('%Y-%m-%dT%H:%M:%S.%L')
   end
 end
 

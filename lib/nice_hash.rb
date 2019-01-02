@@ -373,6 +373,8 @@ class NiceHash
             }
             hash[key]=value_ret
           end
+        elsif value.kind_of?(Proc)
+          hash[key]=value.call
         else
           hash[key]=value
         end
@@ -509,7 +511,7 @@ class NiceHash
             end
 
           else
-            unless only_patterns
+            unless only_patterns or value.kind_of?(Proc)
               results[key]=false unless value==values[key]
             end
           end
