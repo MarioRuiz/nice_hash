@@ -539,7 +539,7 @@ Take a look at a full example: https://gist.github.com/MarioRuiz/824d7a462b62fd8
 
 ### Adding other values on real time when calling `generate` method
 
-If you need a value to be supplied for your key on real time everytime you call the `generate` method you can use `lambda`
+If you need a value to be supplied for your key on real time every time you call the `generate` method you can use `lambda`
 
 ```ruby
     my_hash = {
@@ -570,6 +570,45 @@ This is the output:
  :other=>"2019-01-02T13:41:05.536"}
 ```
 
+#### Accessing other values of the hash on real time
+
+If you need for example to access another value of the key to generate a value on real time you can use `NiceHash.values`
+
+Take a look at this example:
+
+```ruby
+
+my_hash = {
+    loginname: :"10:Ln",
+    send_email: :"true|false",
+    email: lambda {
+        if NiceHash.values._send_email=='true'
+            :"30-50:@".gen
+        else
+            ""
+        end
+    }
+}
+
+pp my_hash.gen
+pp my_hash.gen
+pp my_hash.gen
+
+```
+
+This code will generate a hash where `send_email` can be `true` or `false`. In case it is `true` it will generate a value for the key `email` from 30 to 50 characters valid email, in case it is `false` it will contain empty string.
+
+This is a possible output of the previous code:
+
+```ruby
+{:loginname=>"jnazA9iGN3",
+ :send_email=>"true",
+ :email=>"aRR4SsPaA.0ilh_RW0_y.sQL@goxrssgtkp4df.nkc"}
+
+{:loginname=>"2CjT9wLMxq", :send_email=>"false", :email=>""}
+
+{:loginname=>"XlMpgNPlLR", :send_email=>"false", :email=>""}
+```
 
 ### Other useful methods
 

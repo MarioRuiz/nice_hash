@@ -27,6 +27,10 @@ require 'string_pattern'
 #   }
 ###########################################################################
 class NiceHash
+  class << self
+    attr_reader :values
+  end
+  @values = {}
 
   ###########################################################################
   # It will filter the hash by the key specified on select_hash_key.
@@ -44,7 +48,7 @@ class NiceHash
   #   new_hash = my_hash.select_key(:wrong)
   ###########################################################################
   def NiceHash.select_key(pattern_hash, select_hash_key)
-    hash=Hash.new()
+    hashv=Hash.new()
 
     if pattern_hash.kind_of?(Hash) and pattern_hash.size>0
       pattern_hash.each {|key, value|
@@ -60,7 +64,7 @@ class NiceHash
           array_pattern=false
           value.each {|v|
             if (v.kind_of?(String) or v.kind_of?(Symbol)) and StringPattern.analyze(v, silent: true).kind_of?(StringPattern::Pattern)
-              hash[key]=value
+              hashv[key]=value
               array_pattern=true
               break
             end
@@ -71,16 +75,16 @@ class NiceHash
               ret=NiceHash.select_key(v, select_hash_key)
               value_ret<<ret
             }
-            hash[key]=value_ret
+            hashv[key]=value_ret
           end
         else
-          hash[key]=value
+          hashv[key]=value
         end
       }
     else
       return pattern_hash
     end
-    return hash
+    return hashv
   end
 
   ###########################################################################
@@ -296,7 +300,7 @@ class NiceHash
   #   new_hash = my_hash.generate(:correct, errors: [:min_length])
   ###########################################################################
   def NiceHash.generate(pattern_hash, select_hash_key=nil, expected_errors: [], **synonyms)
-    hash=Hash.new()
+    hashv=Hash.new()
     same_values=Hash.new()
     expected_errors=synonyms[:errors] if synonyms.keys.include?(:errors)
     if expected_errors.kind_of?(Symbol)
@@ -321,45 +325,45 @@ class NiceHash
 
         if value.kind_of?(String) or value.kind_of?(Symbol)
           if ((StringPattern.optimistic and value.kind_of?(String)) or value.kind_of?(Symbol)) and value.to_s.scan(/^!?\d+-?\d*:.+/).size>0
-            hash[key]=StringPattern.generate(value, expected_errors: expected_errors)
+            hashv[key]=StringPattern.generate(value, expected_errors: expected_errors)
           elsif ((StringPattern.optimistic and value.kind_of?(String)) or value.kind_of?(Symbol)) and value.to_s.scan(/^([\w\s\-]+\|)+[\w\s\-]+$/).size>0
             if expected_errors.include?(:min_length) or (expected_errors.include?(:length) and rand.round==0)
               min=value.to_s.split("|").min {|a, b| a.size <=> b.size}
-              hash[key]=min[0..-2] unless min==""
+              hashv[key]=min[0..-2] unless min==""
             end
-            if !hash.keys.include?(key) and (expected_errors.include?(:max_length) or expected_errors.include?(:length))
+            if !hashv.keys.include?(key) and (expected_errors.include?(:max_length) or expected_errors.include?(:length))
               max=value.to_s.split("|").max {|a, b| a.size <=> b.size}
-              hash[key]=max+max[-1]
+              hashv[key]=max+max[-1]
             end
             if expected_errors.include?(:value) or
                 expected_errors.include?(:string_set_not_allowed) or
                 expected_errors.include?(:required_data)
-              if hash.keys.include?(key)
-                v=hash[key]
+              if hashv.keys.include?(key)
+                v=hashv[key]
               else
                 v=value.to_s.split("|").sample
               end
               unless expected_errors.include?(:string_set_not_allowed)
                 v=StringPattern.generate(:"#{v.size}:[#{value.to_s.split("|").join.split(//).uniq.join}]")
-                hash[key]=v unless value.to_s.split("|").include?(v)
+                hashv[key]=v unless value.to_s.split("|").include?(v)
               end
-              unless hash.keys.include?(key)
+              unless hashv.keys.include?(key)
                 one_wrong_letter=StringPattern.generate(:"1:LN$[%#{value.to_s.split("|").join.split(//).uniq.join}%]")
                 v[rand(v.size)]=one_wrong_letter
-                hash[key]=v unless value.to_s.split("|").include?(v)
+                hashv[key]=v unless value.to_s.split("|").include?(v)
               end
             end
-            unless hash.keys.include?(key)
-              hash[key]=value.to_s.split("|").sample
+            unless hashv.keys.include?(key)
+              hashv[key]=value.to_s.split("|").sample
             end
           else
-            hash[key]=value
+            hashv[key]=value
           end
         elsif value.kind_of?(Array)
           array_pattern=false
           value.each {|v|
             if (v.kind_of?(String) or v.kind_of?(Symbol)) and StringPattern.analyze(v, silent: true).kind_of?(StringPattern::Pattern)
-              hash[key]=StringPattern.generate(value, expected_errors: expected_errors)
+              hashv[key]=StringPattern.generate(value, expected_errors: expected_errors)
               array_pattern=true
               break
             end
@@ -371,24 +375,26 @@ class NiceHash
               ret=v if ret.kind_of?(Hash) and ret.size==0
               value_ret<<ret
             }
-            hash[key]=value_ret
+            hashv[key]=value_ret
           end
         elsif value.kind_of?(Proc)
-          hash[key]=value.call
+          hashv[key]=value.call
         else
-          hash[key]=value
+          hashv[key]=value
         end
 
         if same_values.include?(key)
           same_values[key].each {|k|
-            hash[k]=hash[key]
+            hashv[k]=hashv[key]
           }
         end
+
+        @values = hashv
 
       }
     end
 
-    return hash
+    return hashv
   end
 
 
@@ -586,7 +592,7 @@ class NiceHash
     # Get values from the Hash structure (array of Hashes allowed)
     #   In case the key supplied doesn't exist in the hash then it will be return nil for that one
     # input:
-    #   hash: a simple hash or a hash containing arrays. Example:
+    #   hashv: a simple hash or a hash containing arrays. Example:
     #    example={"id"=>344,
     #              "customer"=>{
     #                  "name"=>"Peter Smith",
@@ -607,7 +613,7 @@ class NiceHash
     #           {"idt"=>[345,3123,3145]}
     #
     ####################################################
-    def NiceHash.get_values(hash,keys)
+    def NiceHash.get_values(hashv,keys)
       if keys.kind_of?(String) or keys.kind_of?(Symbol) then
         keys=[keys]
       end
@@ -616,8 +622,8 @@ class NiceHash
       keys.each {|key|
         number_of_results[key]=0
       }
-      if hash.kind_of?(Array) then
-        hash.each {|tmp|
+      if hashv.kind_of?(Array) then
+        hashv.each {|tmp|
           if tmp.kind_of?(Array) or tmp.kind_of?(Hash) then
             n_result=get_values(tmp, keys)
             if n_result!=:error then
@@ -644,8 +650,8 @@ class NiceHash
             end
           end
         }
-      elsif hash.kind_of?(Hash) then
-        hash.each {|key, value|
+      elsif hashv.kind_of?(Hash) then
+        hashv.each {|key, value|
           #if keys.include?(key) then
           #added to be able to access the keys with symbols to strings and opposite
           if keys.include?(key) or keys.include?(key.to_s) or keys.include?(key.to_sym) then
