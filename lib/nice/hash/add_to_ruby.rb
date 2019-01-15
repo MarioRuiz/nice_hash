@@ -1,5 +1,4 @@
 class String
-  
   ###########################################################################
   # When comparing an string and an integer, float or nil, it will be automatically converted to string:
   #   "300" == 300 #will return true
@@ -7,27 +6,30 @@ class String
   #   ""==nil #will return true
   ###########################################################################
   def ==(par)
-    if par.kind_of?(Integer) or par.nil? or par.kind_of?(Float) then
-      super(par.to_s())
+    if par.is_a?(Integer) || par.nil? || par.is_a?(Float)
+      super(par.to_s)
     else
       super(par)
     end
   end
 
   ###########################################################################
-  #  In case the string is a json it will return the keys specified. the keys need to be provided as symbols
+  #  In case the string is a json it will return the keys specified. the keys need to be provided as symbols.
+  #  In case the string is not a json then it will notify the error and return empty Hash
   #  input:
   #    keys:
   #       1 value with key or an array of keys
   #         In case the key supplied doesn't exist in the hash then it will be returned nil for that one
   #  output:
-  #    if keys given: a hash of (keys, values) or the value, if the key is found more than once in the json string, then it will be return a hash op arrays
-  #    if no keys given, an empty hash
+  #    if keys given: a hash of (keys, values) or the value, if the key is found more than once in the json string, then it will be return a hash op arrays.
+  #    if no keys given: the json string as a ruby structure.
+  #    if no json string or wrong json string, an empty hash.
   ###########################################################################
   def json(*keys)
     require 'json'
-    feed_symbols = JSON.parse(self, symbolize_names: true)
     result = {}
+    begin
+    feed_symbols = JSON.parse(self, symbolize_names: true)
     if !keys.empty?
       result_tmp = if keys[0].is_a?(Symbol)
                      NiceHash.get_values(feed_symbols, keys)
@@ -54,6 +56,9 @@ class String
     else
       result = feed_symbols
     end
+    rescue StandardError => stack
+      puts stack.to_s
+  end
     result
   end
 end
@@ -104,24 +109,22 @@ class Date
   #   puts Date.new(2003,10,31).random(Date.today) #Random date from 2003/10/31 to today
   ###########################################################################
   def random(days)
-    if days.kind_of?(Date) then
-      dif_dates = self - (days+1)
+    if days.is_a?(Date)
+      dif_dates = self - (days + 1)
       date_result = self + rand(dif_dates)
-      return date_result
-    elsif days.kind_of?(Integer) then
-      date_result = self + rand(days+1)
-      return date_result
+      date_result
+    elsif days.is_a?(Integer)
+      date_result = self + rand(days + 1)
+      date_result
     end
   end
-
 end
-
 
 class Time
   # It will return in the format: '%Y-%m-%dT%H:%M:%S.%LZ'
   # Example: puts Time.now.stamp
   def stamp
-    return self.strftime('%Y-%m-%dT%H:%M:%S.%LZ')
+    strftime('%Y-%m-%dT%H:%M:%S.%LZ')
   end
 end
 
