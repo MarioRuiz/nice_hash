@@ -624,7 +624,7 @@ In case you need the time stamp, we added the method `stamp` to the `Time` class
 
 ```ruby
     puts Time.now.stamp
-    #> 2019-01-02T11:03:23.620
+    #> 2019-01-02T11:03:23.620Z
 ```
 
 In class `Date` we added a very handy `random` method you can use to generate random dates.
