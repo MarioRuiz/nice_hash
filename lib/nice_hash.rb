@@ -379,6 +379,8 @@ class NiceHash
           end
         elsif value.kind_of?(Proc)
           hashv[key]=value.call
+        elsif value.kind_of?(Regexp)
+          hashv[key]=value.generate
         else
           hashv[key]=value
         end

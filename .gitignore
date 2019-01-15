@@ -1,5 +1,6 @@
 *.gem
 *.rbc
+tmp*
 /.idea
 /.vscode
 /.config
