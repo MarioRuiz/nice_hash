@@ -238,3 +238,26 @@ class Hash
   alias val validate
   alias patterns pattern_fields
 end
+
+
+###########################################################################
+# symbolize hash of arrays and array of hashes
+# Taken from gist https://gist.github.com/Integralist/9503099
+# Thanks to @integralist
+###########################################################################
+class Object
+  def deep_symbolize_keys
+    if is_a? Hash
+      return reduce({}) do |memo, (k, v)|
+        memo.tap { |m| m[k.to_sym] = v.deep_symbolize_keys }
+      end
+    end
+
+    if is_a? Array
+      return each_with_object([]) do |v, memo|
+        memo << v.deep_symbolize_keys
+      end
+    end
+    self
+  end
+end
