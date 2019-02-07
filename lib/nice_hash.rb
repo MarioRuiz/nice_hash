@@ -1,7 +1,7 @@
 SP_ADD_TO_RUBY = true if !defined?(SP_ADD_TO_RUBY)
-require_relative 'nice/hash/add_to_ruby' if SP_ADD_TO_RUBY
+require_relative "nice/hash/add_to_ruby" if SP_ADD_TO_RUBY
 
-require 'string_pattern'
+require "string_pattern"
 
 ###########################################################################
 # NiceHash creates hashes following certain patterns so your testing will be much easier.
@@ -48,37 +48,36 @@ class NiceHash
   #   new_hash = my_hash.select_key(:wrong)
   ###########################################################################
   def NiceHash.select_key(pattern_hash, select_hash_key)
-    hashv=Hash.new()
+    hashv = Hash.new()
 
-    if pattern_hash.kind_of?(Hash) and pattern_hash.size>0
-      pattern_hash.each {|key, value|
-
+    if pattern_hash.kind_of?(Hash) and pattern_hash.size > 0
+      pattern_hash.each { |key, value|
         if value.kind_of?(Hash)
           if value.keys.include?(select_hash_key)
-            value=value[select_hash_key]
+            value = value[select_hash_key]
           else
-            value=NiceHash.select_key(value, select_hash_key)
+            value = NiceHash.select_key(value, select_hash_key)
           end
         end
         if value.kind_of?(Array)
-          array_pattern=false
-          value.each {|v|
+          array_pattern = false
+          value.each { |v|
             if (v.kind_of?(String) or v.kind_of?(Symbol)) and StringPattern.analyze(v, silent: true).kind_of?(StringPattern::Pattern)
-              hashv[key]=value
-              array_pattern=true
+              hashv[key] = value
+              array_pattern = true
               break
             end
           }
           unless array_pattern
-            value_ret=Array.new
-            value.each {|v|
-              ret=NiceHash.select_key(v, select_hash_key)
-              value_ret<<ret
+            value_ret = Array.new
+            value.each { |v|
+              ret = NiceHash.select_key(v, select_hash_key)
+              value_ret << ret
             }
-            hashv[key]=value_ret
+            hashv[key] = value_ret
           end
         else
-          hashv[key]=value
+          hashv[key] = value
         end
       }
     else
@@ -121,50 +120,49 @@ class NiceHash
   def NiceHash.pattern_fields(pattern_hash, *select_hash_key)
     pattern_fields = Array.new
 
-    if pattern_hash.kind_of?(Hash) and pattern_hash.size>0
-      pattern_hash.each {|key, value|
-        key=[key]
+    if pattern_hash.kind_of?(Hash) and pattern_hash.size > 0
+      pattern_hash.each { |key, value|
+        key = [key]
         if value.kind_of?(Hash)
-          if select_hash_key.size==1 and value.keys.include?(select_hash_key[0])
-            value=value[select_hash_key[0]]
+          if select_hash_key.size == 1 and value.keys.include?(select_hash_key[0])
+            value = value[select_hash_key[0]]
           else
-            res=NiceHash.pattern_fields(value, *select_hash_key)
-            if res.size>0
-              res.each {|r|
-                pattern_fields<<(r.unshift(key)).flatten
+            res = NiceHash.pattern_fields(value, *select_hash_key)
+            if res.size > 0
+              res.each { |r|
+                pattern_fields << (r.unshift(key)).flatten
               }
             end
             next
           end
         end
         if value.kind_of?(String)
-          if StringPattern.optimistic and value.to_s.scan(/^!?\d+-?\d*:.+/).size>0
+          if StringPattern.optimistic and value.to_s.scan(/^!?\d+-?\d*:.+/).size > 0
             pattern_fields << key
           end
         elsif value.kind_of?(Symbol)
-          if value.to_s.scan(/^!?\d+-?\d*:.+/).size>0
+          if value.to_s.scan(/^!?\d+-?\d*:.+/).size > 0
             pattern_fields << key
           end
         elsif value.kind_of?(Array)
-
-          array_pattern=false
-          value.each {|v|
+          array_pattern = false
+          value.each { |v|
             if (v.kind_of?(String) or v.kind_of?(Symbol)) and StringPattern.analyze(v, silent: true).kind_of?(StringPattern::Pattern)
               pattern_fields << key
-              array_pattern=true
+              array_pattern = true
               break
             end
           }
           unless array_pattern
-            i=0
-            value.each {|v|
-              res=NiceHash.pattern_fields(v, *select_hash_key)
-              if res.size>0
-                res.each {|r|
-                  pattern_fields<<(r.unshift(i).unshift(key)).flatten
+            i = 0
+            value.each { |v|
+              res = NiceHash.pattern_fields(v, *select_hash_key)
+              if res.size > 0
+                res.each { |r|
+                  pattern_fields << (r.unshift(i).unshift(key)).flatten
                 }
               end
-              i+=1
+              i += 1
             }
           end
         end
@@ -195,49 +193,48 @@ class NiceHash
   def NiceHash.select_fields(pattern_hash, *select_hash_key)
     select_fields = Array.new
 
-    if pattern_hash.kind_of?(Hash) and pattern_hash.size>0
-      pattern_hash.each {|key, value|
-        key=[key]
+    if pattern_hash.kind_of?(Hash) and pattern_hash.size > 0
+      pattern_hash.each { |key, value|
+        key = [key]
         if value.kind_of?(Hash)
-          if select_hash_key.size==1 and value.keys.include?(select_hash_key[0])
-            value=value[select_hash_key[0]]
+          if select_hash_key.size == 1 and value.keys.include?(select_hash_key[0])
+            value = value[select_hash_key[0]]
           else
-            res=NiceHash.select_fields(value, *select_hash_key)
-            if res.size>0
-              res.each {|r|
-                select_fields<<(r.unshift(key)).flatten
+            res = NiceHash.select_fields(value, *select_hash_key)
+            if res.size > 0
+              res.each { |r|
+                select_fields << (r.unshift(key)).flatten
               }
             end
             next
           end
         end
         if value.kind_of?(String)
-          if StringPattern.optimistic and value.to_s.scan(/^([\w\s\-]+\|)+[\w\s\-]+$/).size>0
+          if StringPattern.optimistic and value.to_s.scan(/^([\w\s\-]+\|)+[\w\s\-]+$/).size > 0
             select_fields << key
           end
         elsif value.kind_of?(Symbol)
-          if value.to_s.scan(/^([\w\s\-]+\|)+[\w\s\-]+$/).size>0
+          if value.to_s.scan(/^([\w\s\-]+\|)+[\w\s\-]+$/).size > 0
             select_fields << key
           end
         elsif value.kind_of?(Array)
-
-          array_pattern=false
-          value.each {|v|
+          array_pattern = false
+          value.each { |v|
             if (v.kind_of?(String) or v.kind_of?(Symbol)) and StringPattern.analyze(v, silent: true).kind_of?(StringPattern::Pattern)
-              array_pattern=true
+              array_pattern = true
               break
             end
           }
           unless array_pattern
-            i=0
-            value.each {|v|
-              res=NiceHash.select_fields(v, *select_hash_key)
-              if res.size>0
-                res.each {|r|
-                  select_fields<<(r.unshift(i).unshift(key)).flatten
+            i = 0
+            value.each { |v|
+              res = NiceHash.select_fields(v, *select_hash_key)
+              if res.size > 0
+                res.each { |r|
+                  select_fields << (r.unshift(i).unshift(key)).flatten
                 }
               end
-              i+=1
+              i += 1
             }
           end
         end
@@ -246,7 +243,6 @@ class NiceHash
 
     return select_fields
   end
-
 
   ###########################################################################
   # It will generate a new hash with the values generated from the string patterns and select fields specified.
@@ -299,106 +295,103 @@ class NiceHash
   #   new_hash = my_hash.gen(:correct)
   #   new_hash = my_hash.generate(:correct, errors: [:min_length])
   ###########################################################################
-  def NiceHash.generate(pattern_hash, select_hash_key=nil, expected_errors: [], **synonyms)
-    hashv=Hash.new()
-    same_values=Hash.new()
-    expected_errors=synonyms[:errors] if synonyms.keys.include?(:errors)
+  def NiceHash.generate(pattern_hash, select_hash_key = nil, expected_errors: [], **synonyms)
+    hashv = Hash.new()
+    same_values = Hash.new()
+    expected_errors = synonyms[:errors] if synonyms.keys.include?(:errors)
     if expected_errors.kind_of?(Symbol)
-      expected_errors=[expected_errors]
+      expected_errors = [expected_errors]
     end
 
-    if pattern_hash.kind_of?(Hash) and pattern_hash.size>0
-      pattern_hash.each {|key, value|
-
+    if pattern_hash.kind_of?(Hash) and pattern_hash.size > 0
+      pattern_hash.each { |key, value|
         if key.kind_of?(Array)
-          same_values[key[0]]=key.dup
+          same_values[key[0]] = key.dup
           same_values[key[0]].shift
-          key=key[0]
+          key = key[0]
         end
         if value.kind_of?(Hash)
           if value.keys.include?(select_hash_key)
-            value=value[select_hash_key]
+            value = value[select_hash_key]
           else
-            value=NiceHash.generate(value, select_hash_key, expected_errors: expected_errors)
+            value = NiceHash.generate(value, select_hash_key, expected_errors: expected_errors)
           end
         end
 
         if value.kind_of?(String) or value.kind_of?(Symbol)
-          if ((StringPattern.optimistic and value.kind_of?(String)) or value.kind_of?(Symbol)) and value.to_s.scan(/^!?\d+-?\d*:.+/).size>0
-            hashv[key]=StringPattern.generate(value, expected_errors: expected_errors)
-          elsif ((StringPattern.optimistic and value.kind_of?(String)) or value.kind_of?(Symbol)) and value.to_s.scan(/^([\w\s\-]+\|)+[\w\s\-]+$/).size>0
-            if expected_errors.include?(:min_length) or (expected_errors.include?(:length) and rand.round==0)
-              min=value.to_s.split("|").min {|a, b| a.size <=> b.size}
-              hashv[key]=min[0..-2] unless min==""
+          if ((StringPattern.optimistic and value.kind_of?(String)) or value.kind_of?(Symbol)) and value.to_s.scan(/^!?\d+-?\d*:.+/).size > 0
+            hashv[key] = StringPattern.generate(value, expected_errors: expected_errors)
+          elsif ((StringPattern.optimistic and value.kind_of?(String)) or value.kind_of?(Symbol)) and value.to_s.scan(/^([\w\s\-]+\|)+[\w\s\-]+$/).size > 0
+            if expected_errors.include?(:min_length) or (expected_errors.include?(:length) and rand.round == 0)
+              min = value.to_s.split("|").min { |a, b| a.size <=> b.size }
+              hashv[key] = min[0..-2] unless min == ""
             end
             if !hashv.keys.include?(key) and (expected_errors.include?(:max_length) or expected_errors.include?(:length))
-              max=value.to_s.split("|").max {|a, b| a.size <=> b.size}
-              hashv[key]=max+max[-1]
+              max = value.to_s.split("|").max { |a, b| a.size <=> b.size }
+              hashv[key] = max + max[-1]
             end
             if expected_errors.include?(:value) or
-                expected_errors.include?(:string_set_not_allowed) or
-                expected_errors.include?(:required_data)
+               expected_errors.include?(:string_set_not_allowed) or
+               expected_errors.include?(:required_data)
               if hashv.keys.include?(key)
-                v=hashv[key]
+                v = hashv[key]
               else
-                v=value.to_s.split("|").sample
+                v = value.to_s.split("|").sample
               end
               unless expected_errors.include?(:string_set_not_allowed)
-                v=StringPattern.generate(:"#{v.size}:[#{value.to_s.split("|").join.split(//).uniq.join}]")
-                hashv[key]=v unless value.to_s.split("|").include?(v)
+                v = StringPattern.generate(:"#{v.size}:[#{value.to_s.split("|").join.split(//).uniq.join}]")
+                hashv[key] = v unless value.to_s.split("|").include?(v)
               end
               unless hashv.keys.include?(key)
-                one_wrong_letter=StringPattern.generate(:"1:LN$[%#{value.to_s.split("|").join.split(//).uniq.join}%]")
-                v[rand(v.size)]=one_wrong_letter
-                hashv[key]=v unless value.to_s.split("|").include?(v)
+                one_wrong_letter = StringPattern.generate(:"1:LN$[%#{value.to_s.split("|").join.split(//).uniq.join}%]")
+                v[rand(v.size)] = one_wrong_letter
+                hashv[key] = v unless value.to_s.split("|").include?(v)
               end
             end
             unless hashv.keys.include?(key)
-              hashv[key]=value.to_s.split("|").sample
+              hashv[key] = value.to_s.split("|").sample
             end
           else
-            hashv[key]=value
+            hashv[key] = value
           end
         elsif value.kind_of?(Array)
-          array_pattern=false
-          value.each {|v|
+          array_pattern = false
+          value.each { |v|
             if (v.kind_of?(String) or v.kind_of?(Symbol)) and StringPattern.analyze(v, silent: true).kind_of?(StringPattern::Pattern)
-              hashv[key]=StringPattern.generate(value, expected_errors: expected_errors)
-              array_pattern=true
+              hashv[key] = StringPattern.generate(value, expected_errors: expected_errors)
+              array_pattern = true
               break
             end
           }
           unless array_pattern
-            value_ret=Array.new
-            value.each {|v|
-              ret=NiceHash.generate(v, select_hash_key, expected_errors: expected_errors)
-              ret=v if ret.kind_of?(Hash) and ret.size==0
-              value_ret<<ret
+            value_ret = Array.new
+            value.each { |v|
+              ret = NiceHash.generate(v, select_hash_key, expected_errors: expected_errors)
+              ret = v if ret.kind_of?(Hash) and ret.size == 0
+              value_ret << ret
             }
-            hashv[key]=value_ret
+            hashv[key] = value_ret
           end
         elsif value.kind_of?(Proc)
-          hashv[key]=value.call
+          hashv[key] = value.call
         elsif value.kind_of?(Regexp)
-          hashv[key]=value.generate
+          hashv[key] = value.generate
         else
-          hashv[key]=value
+          hashv[key] = value
         end
 
         if same_values.include?(key)
-          same_values[key].each {|k|
-            hashv[k]=hashv[key]
+          same_values[key].each { |k|
+            hashv[k] = hashv[key]
           }
         end
 
         @values = hashv
-
       }
     end
 
     return hashv
   end
-
 
   ###########################################################################
   # Validates a given values_hash_to_validate with string patterns and select fields from pattern_hash
@@ -448,95 +441,90 @@ class NiceHash
   ###########################################################################
   def NiceHash.validate(patterns_hash, values_hash_to_validate, only_patterns: true)
     if patterns_hash.kind_of?(Array)
-      pattern_hash=patterns_hash[0]
-      select_hash_key=patterns_hash[1]
+      pattern_hash = patterns_hash[0]
+      select_hash_key = patterns_hash[1]
     elsif patterns_hash.kind_of?(Hash)
-      pattern_hash=patterns_hash
-      select_hash_key=nil
+      pattern_hash = patterns_hash
+      select_hash_key = nil
     else
       puts "NiceHash.validate wrong pattern_hash supplied #{patterns_hash.inspect}"
       return {error: :error}
     end
     values = values_hash_to_validate
-    results={}
-    same_values={}
-    if pattern_hash.kind_of?(Hash) and pattern_hash.size>0
-      pattern_hash.each {|key, value|
-
+    results = {}
+    same_values = {}
+    if pattern_hash.kind_of?(Hash) and pattern_hash.size > 0
+      pattern_hash.each { |key, value|
         if key.kind_of?(Array)
-          same_values[key[0]]=key.dup
+          same_values[key[0]] = key.dup
           same_values[key[0]].shift
-          key=key[0]
+          key = key[0]
         end
         if value.kind_of?(Hash)
           if !select_hash_key.nil? and value.keys.include?(select_hash_key)
-            value=value[select_hash_key]
+            value = value[select_hash_key]
           elsif values.keys.include?(key) and values[key].kind_of?(Hash)
-            res=NiceHash.validate([value, select_hash_key], values[key], only_patterns: only_patterns)
-            results[key]=res if res.size>0
+            res = NiceHash.validate([value, select_hash_key], values[key], only_patterns: only_patterns)
+            results[key] = res if res.size > 0
             next
           end
         end
 
         if values.keys.include?(key)
           if value.kind_of?(String) or value.kind_of?(Symbol)
-            if ((StringPattern.optimistic and value.kind_of?(String)) or value.kind_of?(Symbol)) and value.to_s.scan(/^!?\d+-?\d*:.+/).size>0
-              res=StringPattern.validate(pattern: value, text: values[key])
-              results[key]=res if res.size>0
-            elsif !only_patterns and ((StringPattern.optimistic and value.kind_of?(String)) or value.kind_of?(Symbol)) and value.to_s.scan(/^([\w\s\-]+\|)+[\w\s\-]+$/).size>0
-              results[key]=false unless value.to_s.split("|").include?(values[key])
+            if ((StringPattern.optimistic and value.kind_of?(String)) or value.kind_of?(Symbol)) and value.to_s.scan(/^!?\d+-?\d*:.+/).size > 0
+              res = StringPattern.validate(pattern: value, text: values[key])
+              results[key] = res if res.size > 0
+            elsif !only_patterns and ((StringPattern.optimistic and value.kind_of?(String)) or value.kind_of?(Symbol)) and value.to_s.scan(/^([\w\s\-]+\|)+[\w\s\-]+$/).size > 0
+              results[key] = false unless value.to_s.split("|").include?(values[key])
             elsif !only_patterns
-              results[key]=false unless value.to_s==values[key].to_s
+              results[key] = false unless value.to_s == values[key].to_s
             end
           elsif value.kind_of?(Array)
-            array_pattern=false
-            complex_data=false
-            value.each {|v|
+            array_pattern = false
+            complex_data = false
+            value.each { |v|
               if (v.kind_of?(String) or v.kind_of?(Symbol)) and StringPattern.analyze(v, silent: true).kind_of?(StringPattern::Pattern)
-                res=StringPattern.validate(pattern: value, text: values[key])
-                results[key]=res if res==false
-                array_pattern=true
+                res = StringPattern.validate(pattern: value, text: values[key])
+                results[key] = res if res == false
+                array_pattern = true
                 break
               elsif v.kind_of?(Hash) or v.kind_of?(Array) or v.kind_of?(Struct)
-                complex_data=true
+                complex_data = true
                 break
               end
             }
             unless array_pattern or results.include?(key)
-              i=0
-              value.each {|v|
-                res=NiceHash.validate([v, select_hash_key], values[key][i], only_patterns: only_patterns)
-                if res.size>0
-                  results[key]=Array.new() if !results.keys.include?(key)
-                  results[key][i]=res
+              i = 0
+              value.each { |v|
+                res = NiceHash.validate([v, select_hash_key], values[key][i], only_patterns: only_patterns)
+                if res.size > 0
+                  results[key] = Array.new() if !results.keys.include?(key)
+                  results[key][i] = res
                 end
-                i+=1
+                i += 1
               }
-
             end
             unless array_pattern or only_patterns or results.include?(key) or complex_data
-              results[key]=false unless value==values[key]
+              results[key] = false unless value == values[key]
             end
-
           else
             unless only_patterns or value.kind_of?(Proc)
-              results[key]=false unless value==values[key]
+              results[key] = false unless value == values[key]
             end
           end
 
           if same_values.include?(key)
-            same_values[key].each {|k|
+            same_values[key].each { |k|
               if values.keys.include?(k)
-                if values[key]!=values[k]
-                  results[k]="Not equal to #{key}"
+                if values[key] != values[k]
+                  results[k] = "Not equal to #{key}"
                 end
               end
             }
           end
-
         end
       }
-
     end
 
     return results
@@ -563,158 +551,210 @@ class NiceHash
   ###########################################################################
   def NiceHash.change_one_by_one(patterns_hash, values_hash)
     if patterns_hash.kind_of?(Array)
-      select_key=patterns_hash[1]
-      pattern_hash=patterns_hash[0]
+      select_key = patterns_hash[1]
+      pattern_hash = patterns_hash[0]
     else
-      pattern_hash=patterns_hash
-      select_key=[]
+      pattern_hash = patterns_hash
+      select_key = []
     end
-    array=Array.new
-    good_values=NiceHash.generate(pattern_hash, select_key)
-    select_keys=pattern_hash.pattern_fields(select_key)+pattern_hash.select_fields(select_key)
-    select_keys.each {|field|
-      new_hash=Marshal.load(Marshal.dump(good_values))
+    array = Array.new
+    good_values = NiceHash.generate(pattern_hash, select_key)
+    select_keys = pattern_hash.pattern_fields(select_key) + pattern_hash.select_fields(select_key)
+    select_keys.each { |field|
+      new_hash = Marshal.load(Marshal.dump(good_values))
       # to deal with the case same values... like in pwd1, pwd2, pwd3
       if field[-1].kind_of?(Array)
-        last_to_set=field[-1]
+        last_to_set = field[-1]
       else
-        last_to_set=[field[-1]]
+        last_to_set = [field[-1]]
       end
-      last_to_set.each {|f|
-        keys=field[0..-2]<<f
+      last_to_set.each { |f|
+        keys = field[0..-2] << f
         new_hash.bury(keys, values_hash.dig(*keys))
       }
-      array<<new_hash
+      array << new_hash
     }
     return array
   end
 
+  ##################################################
+  # Get values from the Hash structure (array of Hashes allowed)
+  #   In case the key supplied doesn't exist in the hash then it will be return nil for that one
+  # input:
+  #   hashv: a simple hash or a hash containing arrays. Example:
+  #    example={"id"=>344,
+  #              "customer"=>{
+  #                  "name"=>"Peter Smith",
+  #                  "phone"=>334334333
+  #              },
+  #              "tickets"=>[
+  #                {"idt"=>345,"name"=>"myFavor1"},
+  #                {"idt"=>3123},
+  #                {"idt"=>3145,"name"=>"Special ticket"}
+  #              ]
+  #            }
+  #   keys: one key (string) or an array of keys
+  # output:
+  #   a Hash of Arrays with all values found.
+  #       Example of output with example.get_values("id","name")
+  #           {"id"=>[334],"name"=>["Peter North"]}
+  #       Example of output with example.get_values("idt")
+  #           {"idt"=>[345,3123,3145]}
+  #
+  ####################################################
+  def NiceHash.get_values(hashv, keys)
+    if keys.kind_of?(String) or keys.kind_of?(Symbol)
+      keys = [keys]
+    end
+    result = Hash.new()
+    number_of_results = Hash.new()
+    keys.each { |key|
+      number_of_results[key] = 0
+    }
+    if hashv.kind_of?(Array)
+      hashv.each { |tmp|
+        if tmp.kind_of?(Array) or tmp.kind_of?(Hash)
+          n_result = get_values(tmp, keys)
+          if n_result != :error
+            n_result.each { |n_key, n_value|
+              if result.has_key?(n_key)
+                if !result[n_key].kind_of?(Array) or
+                   (result[n_key].kind_of?(Array) and number_of_results[n_key] < result[n_key].size)
+                  if result[n_key].kind_of?(Hash) or result[n_key].kind_of?(Array)
+                    res_tx = result[n_key].dup()
+                  else
+                    res_tx = result[n_key]
+                  end
+                  result[n_key] = Array.new()
+                  result[n_key].push(res_tx)
+                  result[n_key].push(n_value)
+                else
+                  result[n_key].push(n_value)
+                end
+              else
+                result[n_key] = n_value
+              end
+              number_of_results[n_key] += 1
+            }
+          end
+        end
+      }
+    elsif hashv.kind_of?(Hash)
+      hashv.each { |key, value|
+        #if keys.include?(key) then
+        #added to be able to access the keys with symbols to strings and opposite
+        if keys.include?(key) or keys.include?(key.to_s) or keys.include?(key.to_sym)
+          #added to be able to access the keys with symbols to strings and opposite
+          key = key.to_s() if keys.include?(key.to_s)
+          key = key.to_sym() if keys.include?(key.to_sym)
+
+          if result.has_key?(key)
+            if !result[key].kind_of?(Array) or
+               (result[key].kind_of?(Array) and number_of_results[key] < result[key].size)
+              if result[key].kind_of?(Hash) or result[key].kind_of?(Array)
+                res_tx = result[key].dup()
+              else
+                res_tx = result[key]
+              end
+              result[key] = Array.new()
+              result[key].push(res_tx)
+              result[key].push(value)
+            else
+              result[key].push(value)
+            end
+          else
+            result[key] = value
+          end
+          number_of_results[key] += 1
+        end
+        if value.kind_of?(Array) or value.kind_of?(Hash)
+          n_result = get_values(value, keys)
+          if n_result != :error
+            n_result.each { |n_key, n_value|
+              if result.has_key?(n_key)
+                if !result[n_key].kind_of?(Array) or
+                   (result[n_key].kind_of?(Array) and number_of_results[n_key] < result[n_key].size)
+                  if result[n_key].kind_of?(Hash) or result[n_key].kind_of?(Array)
+                    res_tx = result[n_key].dup()
+                  else
+                    res_tx = result[n_key]
+                  end
+                  result[n_key] = Array.new()
+                  result[n_key].push(res_tx)
+                  result[n_key].push(n_value)
+                else
+                  result[n_key].push(n_value)
+                end
+              else
+                result[n_key] = n_value
+              end
+              number_of_results[n_key] += 1
+            }
+          end
+        end
+      }
+    else
+      return :error
+    end
+    if result.kind_of?(Hash) and caller[0]["get_values"].nil? #no error or anything weird
+      (keys - result.keys).each { |k| #in case some keys don't exist in the hash
+        result[k] = nil
+      }
+    end
+    return result
+  end
 
   ##################################################
-    # Get values from the Hash structure (array of Hashes allowed)
-    #   In case the key supplied doesn't exist in the hash then it will be return nil for that one
-    # input:
-    #   hashv: a simple hash or a hash containing arrays. Example:
-    #    example={"id"=>344,
-    #              "customer"=>{
-    #                  "name"=>"Peter Smith",
-    #                  "phone"=>334334333
-    #              },
-    #              "tickets"=>[
-    #                {"idt"=>345,"name"=>"myFavor1"},
-    #                {"idt"=>3123},
-    #                {"idt"=>3145,"name"=>"Special ticket"}
-    #              ]
-    #            }
-    #   keys: one key (string) or an array of keys
-    # output:
-    #   a Hash of Arrays with all values found.
-    #       Example of output with example.get_values("id","name")
-    #           {"id"=>[334],"name"=>["Peter North"]}
-    #       Example of output with example.get_values("idt")
-    #           {"idt"=>[345,3123,3145]}
-    #
-    ####################################################
-    def NiceHash.get_values(hashv,keys)
-      if keys.kind_of?(String) or keys.kind_of?(Symbol) then
-        keys=[keys]
+  #  Analyzes the supplied replica and verifies that the structure follows the one supplied on structure
+  #
+  #  @param structure [Array] [Hash] Contains the structure that should follow the replica. It can be a nested combination of arrays and hashes.
+  #  @param replica [Array] [Hash] Contains the element to be verified on following the supplied structure. It can be a nested combination of arrays and hashes.
+  #  @param compare_only_if_exist_key [Boolean] (Default false) If true, in case an element exist on structure but doesn't exist on replica won't be verified.
+  #
+  #  @return [Boolean] true in case replica follows the structure supplied
+  #
+  #  @example
+  #    my_structure = [
+  #      {  name: 'xxx',
+  #         zip: 'yyyy',
+  #         customer: true,
+  #         product_ids: [1]
+  #      }
+  #    ]
+  #    my_replica = [ {name: 'Peter Ben', zip: '1121A', customer: false, product_ids: []},
+  #                   {name: 'John Woop', zip: '74014', customer: true, product_ids: [10,120,301]}]
+  #    NiceHash.compare_structure(my_structure, my_replica)
+  #    #>true
+  ##################################################
+  def NiceHash.compare_structure(structure, replica, compare_only_if_exist_key = false)
+    return false unless structure.class == replica.class or
+                        ((structure.is_a?(TrueClass) or structure.is_a?(FalseClass)) and (replica.is_a?(TrueClass) or replica.is_a?(FalseClass)))
+    if structure.is_a?(Hash)
+      structure.each do |key, value|
+        if compare_only_if_exist_key and replica.key?(key)
+          unless compare_structure(value, replica[key], compare_only_if_exist_key)
+            return false
+          end
+        elsif compare_only_if_exist_key == false
+          return false unless replica.key?(key)
+          return false unless compare_structure(value, replica[key], compare_only_if_exist_key)
+        end
       end
-      result=Hash.new()
-      number_of_results=Hash.new()
-      keys.each {|key|
-        number_of_results[key]=0
-      }
-      if hashv.kind_of?(Array) then
-        hashv.each {|tmp|
-          if tmp.kind_of?(Array) or tmp.kind_of?(Hash) then
-            n_result=get_values(tmp, keys)
-            if n_result!=:error then
-              n_result.each {|n_key, n_value|
-                if result.has_key?(n_key) then
-                  if !result[n_key].kind_of?(Array) or
-                      (result[n_key].kind_of?(Array) and number_of_results[n_key] < result[n_key].size) then
-                    if result[n_key].kind_of?(Hash) or result[n_key].kind_of?(Array) then
-                      res_tx=result[n_key].dup()
-                    else
-                      res_tx=result[n_key]
-                    end
-                    result[n_key]=Array.new()
-                    result[n_key].push(res_tx)
-                    result[n_key].push(n_value)
-                  else
-                    result[n_key].push(n_value)
-                  end
-                else
-                  result[n_key]=n_value
-                end
-                number_of_results[n_key]+=1
-              }
-            end
-          end
-        }
-      elsif hashv.kind_of?(Hash) then
-        hashv.each {|key, value|
-          #if keys.include?(key) then
-          #added to be able to access the keys with symbols to strings and opposite
-          if keys.include?(key) or keys.include?(key.to_s) or keys.include?(key.to_sym) then
-            #added to be able to access the keys with symbols to strings and opposite
-            key=key.to_s() if keys.include?(key.to_s)
-            key=key.to_sym() if keys.include?(key.to_sym)
-
-            if result.has_key?(key) then
-              if !result[key].kind_of?(Array) or
-                  (result[key].kind_of?(Array) and number_of_results[key] < result[key].size) then
-                if result[key].kind_of?(Hash) or result[key].kind_of?(Array) then
-                  res_tx=result[key].dup()
-                else
-                  res_tx=result[key]
-                end
-                result[key]=Array.new()
-                result[key].push(res_tx)
-                result[key].push(value)
-              else
-                result[key].push(value)
-              end
-            else
-              result[key]=value
-            end
-            number_of_results[key]+=1
-          end
-          if value.kind_of?(Array) or value.kind_of?(Hash) then
-            n_result=get_values(value, keys)
-            if n_result!=:error then
-              n_result.each {|n_key, n_value|
-                if result.has_key?(n_key) then
-                  if !result[n_key].kind_of?(Array) or
-                      (result[n_key].kind_of?(Array) and number_of_results[n_key] < result[n_key].size) then
-                    if result[n_key].kind_of?(Hash) or result[n_key].kind_of?(Array) then
-                      res_tx=result[n_key].dup()
-                    else
-                      res_tx=result[n_key]
-                    end
-                    result[n_key]=Array.new()
-                    result[n_key].push(res_tx)
-                    result[n_key].push(n_value)
-                  else
-                    result[n_key].push(n_value)
-                  end
-                else
-                  result[n_key]=n_value
-                end
-                number_of_results[n_key]+=1
-              }
-            end
-          end
-        }
+    elsif structure.is_a?(Array)
+      if structure.size == 1
+        # compare all elements of replica with the structure of the only element on structure
+        replica.each do |elem|
+          return false unless compare_structure(structure[0], elem, compare_only_if_exist_key)
+        end
       else
-        return :error
+        # compare every element on structure with replica
+        i = 0
+        structure.each do |elem|
+          return false unless compare_structure(elem, replica[i], compare_only_if_exist_key)
+          i += 1
+        end
       end
-      if result.kind_of?(Hash) and caller[0]["get_values"].nil? then #no error or anything weird
-        (keys-result.keys).each {|k| #in case some keys don't exist in the hash
-          result[k]=nil
-        }
-      end
-      return result
     end
-
+    return true
+  end
 end

@@ -618,6 +618,44 @@ This is a possible output of the previous code:
 {:loginname=>"XlMpgNPlLR", :send_email=>"false", :email=>""}
 ```
 
+### Compare the structure of a replica with the supplied structure
+
+By using the NiceHash.compare_structure method you can analyze the supplied replica and verify that the structure follows the one supplied on structure. It supports nested combination of arrays and hashes. It will return true if the comparison is successful.
+
+```ruby
+      my_structure = [
+        {  name: 'xxx',
+           zip: 'yyyy',
+           customer: true,
+           product_ids: [1]
+        }
+      ]
+      my_replica = [ {name: 'Peter Ben', zip: '1121A', customer: false, product_ids: []},
+                     {name: 'John Woop', zip: '74014', customer: true, product_ids: [10,120,301]}]
+
+      NiceHash.compare_structure(my_structure, my_replica)
+      #>true
+```
+
+Another example that will return false since customer key is missing on first value in replica and the product_ids in the second value of replica contains an string instead of an integer.
+
+```ruby
+      my_structure = [
+        {  name: 'xxx',
+           zip: 'yyyy',
+           customer: true,
+           product_ids: [1]
+        }
+      ]
+      my_replica = [ {name: 'Peter Ben', zip: '1121A', product_ids: []},
+                     {name: 'John Woop', zip: '74014', customer: true, product_ids: [10,'120',301]}]
+
+      NiceHash.compare_structure(my_structure, my_replica)
+      #>false
+```
+
+Also you can use a third parameter, compare_only_if_exist_key (Boolean), by default false. If true, in case an element exist on structure but doesn't exist on replica won't be verified.
+
 ### Other useful methods
 
 In case you need the time stamp, we added the method `stamp` to the `Time` class
