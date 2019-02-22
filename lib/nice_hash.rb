@@ -741,18 +741,9 @@ class NiceHash
         end
       end
     elsif structure.is_a?(Array)
-      if structure.size == 1
-        # compare all elements of replica with the structure of the only element on structure
-        replica.each do |elem|
-          return false unless compare_structure(structure[0], elem, compare_only_if_exist_key)
-        end
-      else
-        # compare every element on structure with replica
-        i = 0
-        structure.each do |elem|
-          return false unless compare_structure(elem, replica[i], compare_only_if_exist_key)
-          i += 1
-        end
+      # compare all elements of replica with the structure of the first element on structure
+      replica.each do |elem|
+        return false unless compare_structure(structure[0], elem, compare_only_if_exist_key)
       end
     end
     return true

@@ -623,6 +623,8 @@ This is a possible output of the previous code:
 By using the NiceHash.compare_structure method you can analyze the supplied replica and verify that the structure follows the one supplied on structure. It supports nested combination of arrays and hashes. It will return true if the comparison is successful.
 
 ```ruby
+      require 'nice_hash'
+
       my_structure = [
         {  name: 'xxx',
            zip: 'yyyy',
