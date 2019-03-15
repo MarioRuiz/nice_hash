@@ -167,6 +167,41 @@ puts new_hash.get_values(:address) #> {:address=>"21 Doom Av"}
 puts new_hash.get_values(:address, :zip) #> {:zip=>{:default=>"00000", :correct=>"42782"}, :address=>"21 Doom Av"}
 puts new_hash.get_values(:drawId) #> {:drawId=>["84914", "21158"]}
 ```
+### Change all values on the keys we specified
+
+Supply a hash with all the keys and the values you want to change on the hash, then it will return the hash/array with the values modified at any level.
+
+```ruby
+my_hash = {
+  path: "/api/users",
+  data: { 
+      name: "morpheus", 
+      job: "leader", 
+      lab: { 
+          doom: 'one', 
+          beep: true, 
+          name:'mario', 
+          products: [ 
+              {
+                  name: 'game', 
+                  price: 30
+              },
+              {
+                  name: 'chair', 
+                  price: 130
+              }
+            ] 
+        }
+    }
+}
+
+# using NiceHash class
+pp NiceHash.set_values(my_hash, { price: 75, beep: false } )
+
+# using the Hash class
+pp my_hash.set_values({ price: 75, beep: false })
+
+```
 
 ### Filtering / Selecting an specific key on the hash and subhashes
 

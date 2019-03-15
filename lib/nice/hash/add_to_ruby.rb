@@ -26,39 +26,38 @@ class String
   #    if no json string or wrong json string, an empty hash.
   ###########################################################################
   def json(*keys)
-    require 'json'
+    require "json"
     result = {}
     begin
-    feed_symbols = JSON.parse(self, symbolize_names: true)
-    if !keys.empty?
-      result_tmp = if keys[0].is_a?(Symbol)
-                     NiceHash.get_values(feed_symbols, keys)
+      feed_symbols = JSON.parse(self, symbolize_names: true)
+      if !keys.empty?
+        result_tmp = if keys[0].is_a?(Symbol)
+                       NiceHash.get_values(feed_symbols, keys)
+                     else
+                       {}
+                     end
+
+        if result_tmp.size == 1
+          result = if result_tmp.values.is_a?(Array) && (result_tmp.values.size == 1)
+                     result_tmp.values[0]
                    else
-                     {}
+                     result_tmp.values
                    end
-
-      if result_tmp.size == 1
-        result = if result_tmp.values.is_a?(Array) && (result_tmp.values.size == 1)
-                   result_tmp.values[0]
-                 else
-                   result_tmp.values
-                 end
-      else
-        result_tmp.each do |key, value|
-          result[key] = if (value.is_a?(Array) || value.is_a?(Hash)) && (value.size == 1)
-                          value[0]
-                        else
-                          value
-                        end
+        else
+          result_tmp.each do |key, value|
+            result[key] = if (value.is_a?(Array) || value.is_a?(Hash)) && (value.size == 1)
+                            value[0]
+                          else
+                            value
+                          end
+          end
         end
+      else
+        result = feed_symbols
       end
-
-    else
-      result = feed_symbols
-    end
     rescue StandardError => stack
       puts stack.to_s
-  end
+    end
     result
   end
 end
@@ -92,12 +91,13 @@ class Array
   #    if no keys given, an empty hash
   ###########################################################################
   def json(*keys)
-    json_string = "[#{join(',')}]"
+    json_string = "[#{join(",")}]"
     json_string.json(*keys)
   end
 end
 
-require 'date'
+require "date"
+
 class Date
   ###########################################################################
   # It will generate a random date
@@ -124,7 +124,7 @@ class Time
   # It will return in the format: '%Y-%m-%dT%H:%M:%S.%LZ'
   # Example: puts Time.now.stamp
   def stamp
-    strftime('%Y-%m-%dT%H:%M:%S.%LZ')
+    strftime("%Y-%m-%dT%H:%M:%S.%LZ")
   end
 end
 
@@ -142,10 +142,10 @@ class Hash
   #   my_hash.products[1].price.wrong="AAAAA"
   ###########################################################################
   def method_missing(m, *arguments, &block)
-    m = m[1..-1].to_sym if m[0] == '_'
+    m = m[1..-1].to_sym if m[0] == "_"
     if key?(m)
       self[m]
-    elsif m.to_s[-1] == '='
+    elsif m.to_s[-1] == "="
       self[m.to_s.chop.to_sym] = arguments[0]
     else
       super
@@ -234,11 +234,18 @@ class Hash
     NiceHash.get_values(self, keys)
   end
 
+  ###########################################################################
+  # It will search for the keys supplied and it will set the value specified
+  # More info: NiceHash.set_values
+  ###########################################################################
+  def set_values(hash_values)
+    NiceHash.set_values(self, hash_values)
+  end
+
   alias gen generate
   alias val validate
   alias patterns pattern_fields
 end
-
 
 ###########################################################################
 # symbolize hash of arrays and array of hashes
@@ -249,14 +256,14 @@ class Object
   def deep_symbolize_keys
     if is_a? Hash
       return reduce({}) do |memo, (k, v)|
-        memo.tap { |m| m[k.to_sym] = v.deep_symbolize_keys }
-      end
+               memo.tap { |m| m[k.to_sym] = v.deep_symbolize_keys }
+             end
     end
 
     if is_a? Array
       return each_with_object([]) do |v, memo|
-        memo << v.deep_symbolize_keys
-      end
+               memo << v.deep_symbolize_keys
+             end
     end
     self
   end
