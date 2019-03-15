@@ -715,7 +715,25 @@ In class `Date` we added a very handy `random` method you can use to generate ra
     puts Date.new(2003,10,31).random(Date.today) 
 ```
 
+If you need a clean copy of a hash use the method `deep_copy`
 
+```ruby
+my_hash = {one: 1, two: 2, three: {car: 'seat'}}
+
+my_new_hash = my_hash.deep_copy # using deep_copy method
+my_new_hash[:three][:car] = 'changed'
+my_new_hash[:two] = 'changed'
+p my_hash
+# my_hash doesn't change
+#>{:one=>1, :two=>2, :three=>{:car=>"seat"}}
+
+my_new_hash = my_hash.clone # using clone or dup or direct assignment
+my_new_hash[:three][:car] = 'changed'
+my_new_hash[:two] = 'changed'
+p my_hash
+# my_hash changed!
+#>{:one=>1, :two=>2, :three=>{:car=>"changed"}}
+```
 
 ## Contributing
 

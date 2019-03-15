@@ -174,6 +174,14 @@ class Hash
   end
 
   ###########################################################################
+  # returns a clean copy of the hash
+  ###########################################################################
+  def deep_copy
+    Marshal.load(Marshal.dump(self))
+  end
+
+
+  ###########################################################################
   # It will filter the hash by the key specified on select_hash_key.
   # In case a subhash specified on a value it will be selected only the value of the key specified on select_hash_key
   # More info: NiceHash.select_key
