@@ -148,7 +148,7 @@ class Hash
     elsif m.to_s[-1] == "="
       self[m.to_s.chop.to_sym] = arguments[0]
     else
-      super
+      nil
     end
   end
 
