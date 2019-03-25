@@ -21,9 +21,10 @@ class String
   #       1 value with key or an array of keys
   #         In case the key supplied doesn't exist in the hash then it will be returned nil for that one
   #  output:
-  #    if keys given: a hash of (keys, values) or the value, if the key is found more than once in the json string, then it will be return a hash op arrays.
+  #    if keys given: a hash of (keys, values) or the value, if the key is found more than once in the json string, then it will be return a hash of arrays.
   #    if no keys given: the json string as a ruby structure.
   #    if no json string or wrong json string, an empty hash.
+  #    if one key supplied and doesn't exist on the json string then an empty hash
   ###########################################################################
   def json(*keys)
     require "json"
@@ -36,10 +37,13 @@ class String
                      else
                        {}
                      end
-
         if result_tmp.size == 1
           result = if result_tmp.values.is_a?(Array) && (result_tmp.values.size == 1)
-                     result_tmp.values[0]
+                    if result_tmp.values[0].nil? 
+                      {}
+                    else
+                      result_tmp.values[0]
+                    end
                    else
                      result_tmp.values
                    end

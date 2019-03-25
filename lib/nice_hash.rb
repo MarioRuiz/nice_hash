@@ -618,7 +618,7 @@ class NiceHash
 
   ##################################################
   # Get values from the Hash structure (array of Hashes allowed)
-  #   In case the key supplied doesn't exist in the hash then it will be return nil for that one
+  #   In case the key supplied doesn't exist in the hash then it will be returned nil for that one
   # input:
   #   hashv: a simple hash or a hash containing arrays. Example:
   #    example={"id"=>344,
