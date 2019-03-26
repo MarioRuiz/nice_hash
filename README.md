@@ -168,6 +168,18 @@ puts new_hash.get_values(:address, :zip) #> {:zip=>{:default=>"00000", :correct=
 puts new_hash.get_values(:drawId) #> {:drawId=>["84914", "21158"]}
 ```
 
+In case of an array of hashes, you will be able also to access the different keys, for example:
+
+```ruby
+my_array = [{name: 'Peter', city: 'Madrid'}, {name: 'Lola', city: 'NYC'}] :
+
+my_array.city 
+#> ['Madrid', 'NYC']
+
+my_array._name
+#> ['Peter', 'Lola']
+```
+
 ### Change all values on the keys we specified
 
 Supply a hash with all the keys and the values you want to change on the hash, then it will return the hash/array with the values modified at any level.
