@@ -280,25 +280,3 @@ class Object
     self
   end
 end
-
-class Array
-  ###########################################################################
-  # For Array of Hashes returns an array of values of the hash key specified in case doesn't exist an Array method with the same name
-  # The keys can be accessed also adding underscore to avoid problems with existent methods
-  # examples for the array of hashes [{name: 'Peter', city: 'Madrid'}, {name: 'Lola', city: 'NYC'}] :
-  #   my_array.city
-  #   my_array._name
-  ###########################################################################
-  def method_missing(m, *arguments, &block)
-    m = m[1..-1].to_sym if m[0] == "_"
-    array = []
-    self.map do |hash|
-      if hash.is_a?(Hash)
-        array <<  hash[m]
-      else
-        array << nil
-      end
-    end
-    array
-  end
-end
