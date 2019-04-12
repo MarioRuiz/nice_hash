@@ -10,7 +10,7 @@ Many other features coming to Hash class like the methods 'bury' or select_key, 
 
 You can also parse and filter a json string very easily.
 
-To generate the strings following a pattern take a look at the documentation for string_pattern gem: https://github.com/MarioRuiz/string_pattern. We added support for generating strings from regular expressions but it is only working for the ´generate´ method, use it with caution since it is still on an early stage of development.
+To generate the strings following a pattern take a look at the documentation for string_pattern gem: https://github.com/MarioRuiz/string_pattern. Using string_pattern you can also generate Spanish or English words. We added support for generating strings from regular expressions but it is only working for the ´generate´ method, use it with caution since it is still on an early stage of development.
 
 To use nice_hash on Http connections take a look at nice_http gem: https://github.com/MarioRuiz/nice_http
 
@@ -32,7 +32,7 @@ Or install it yourself as:
 
 ## Usage
 
-Remember!! To generate the strings following a pattern take a look at the documentation for string_pattern gem: https://github.com/MarioRuiz/string_pattern. We added support for generating strings from regular expressions but it is only working for the ´generate´ method, use it with caution since it is still on an early stage of development. All you have to do is to add to a key the value as a Regular expression, for example the key uuid in here will generate a random value like this: "E0BDE5B5-A738-49E6-83C1-9D1FFB313788"
+Remember!! To generate the strings following a pattern take a look at the documentation for string_pattern gem: https://github.com/MarioRuiz/string_pattern. You can also generate Spanish or English words. We added support for generating strings from regular expressions but it is only working for the ´generate´ method, use it with caution since it is still on an early stage of development. All you have to do is to add to a key the value as a Regular expression, for example the key uuid in here will generate a random value like this: "E0BDE5B5-A738-49E6-83C1-9D1FFB313788"
 
 ```ruby
 my_hash = { 
@@ -47,6 +47,7 @@ This is the Hash we will be using on our examples:
 ```ruby
 
 require 'nice_hash'
+StringPattern.word_separator = ' '
 
 my_hash={
     loginame: :"5-10:/xn/", 
