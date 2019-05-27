@@ -749,6 +749,24 @@ p my_hash
 #>{:one=>1, :two=>2, :three=>{:car=>"changed"}}
 ```
 
+If you want to delete a key on a nested hash you can use `delete_nested` and supply the key you want:
+
+```ruby
+  my_hash = { user: {
+                      address: {
+                             city: 'Madrid',
+                             country: 'Spain'
+                          },
+                      name: 'Peter',
+                      age: 33
+                    },
+              customer: true
+  }
+    NiceHash.delete_nested(my_hash, 'user.address.city')
+    #>{:user=>{:address=>{:country=>"Spain"}, :name=>"Peter", :age=>33}, :customer=>true}
+
+```
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/marioruiz/nice_hash.

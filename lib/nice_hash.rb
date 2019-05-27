@@ -787,4 +787,70 @@ class NiceHash
     end
     return true
   end
+
+  ##################################################
+  #  Translate a hash of hashes into a string separted by .
+  #
+  #  @param hash [Hash] The hash we want to translate
+  #
+  #  @return [String] 
+  #
+  #  @example
+  #    my_hash =  { uno: {dos: :tres} }
+  #    NiceHash.transtring(my_hash)
+  #    #>"uno.dos.tres"
+  ##################################################
+  def self.transtring(hash)
+    keys = []
+    if hash.is_a?(Hash)
+      hash.each do |k,v|
+        if v.is_a?(Hash)
+          keys << k
+          keys << trans(v)
+        else
+          keys << k
+          keys << v
+        end
+      end
+    else
+      keys << hash
+    end
+    return keys.join(".")
+  end
+
+  ##################################################
+  #  Deletes the supplied key
+  #
+  #  @param hash [Hash] The hash we want
+  #  @param nested_key [Hash] [String] String with the nested key: 'uno.dos.tres' or a hash { uno: {dos: :tres} }
+  #
+  #  @return [Hash] 
+  #
+  #  @example
+  #  my_hash = { user: {
+  #                      address: {
+  #                             city: 'Madrid',
+  #                             country: 'Spain'
+  #                          },
+  #                      name: 'Peter',
+  #                      age: 33
+  #                    },
+  #              customer: true
+  #  }
+  #    NiceHash.delete_nested(my_hash, 'user.address.city')
+  #    #>{:user=>{:address=>{:country=>"Spain"}, :name=>"Peter", :age=>33}, :customer=>true}
+  ##################################################
+  def self.delete_nested(hash, nested_key)
+    nested_key = transtring(nested_key)
+    keys = nested_key.split('.')
+    if keys.size == 1
+      hash.delete(nested_key.to_sym)
+    else
+      last_key = keys[-1]
+      eval("hash.#{keys[0..(keys.size-2)].join(".")}.delete(:#{last_key})")
+    end
+    return hash
+  end
+
+
 end
