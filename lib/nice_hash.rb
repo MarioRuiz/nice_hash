@@ -770,23 +770,35 @@ class NiceHash
   #    #>true
   ##################################################
   def NiceHash.compare_structure(structure, replica, compare_only_if_exist_key = false)
-    return false unless structure.class == replica.class or
-                        ((structure.is_a?(TrueClass) or structure.is_a?(FalseClass)) and (replica.is_a?(TrueClass) or replica.is_a?(FalseClass)))
+    unless structure.class == replica.class or
+           ((structure.is_a?(TrueClass) or structure.is_a?(FalseClass)) and (replica.is_a?(TrueClass) or replica.is_a?(FalseClass)))
+      puts "NiceHash.compare_structure: different object type #{structure.class} is not #{replica.class}. expected: #{structure.inspect}. found: #{replica.inspect}."
+      return false
+    end
     if structure.is_a?(Hash)
       structure.each do |key, value|
         if compare_only_if_exist_key and replica.key?(key)
           unless compare_structure(value, replica[key], compare_only_if_exist_key)
+            puts "NiceHash.compare_structure: key :#{key} different."
             return false
           end
         elsif compare_only_if_exist_key == false
-          return false unless replica.key?(key)
-          return false unless compare_structure(value, replica[key], compare_only_if_exist_key)
+          unless replica.key?(key)
+            puts "NiceHash.compare_structure: key :#{key} different."
+            return false 
+          end
+          unless compare_structure(value, replica[key], compare_only_if_exist_key)
+            puts "NiceHash.compare_structure: key :#{key} different."
+            return false 
+          end
         end
       end
     elsif structure.is_a?(Array)
       # compare all elements of replica with the structure of the first element on structure
       replica.each do |elem|
-        return false unless compare_structure(structure[0], elem, compare_only_if_exist_key)
+        unless compare_structure(structure[0], elem, compare_only_if_exist_key)
+          return false 
+        end
       end
     end
     return true
