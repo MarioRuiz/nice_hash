@@ -102,16 +102,20 @@ class NiceHash
   ###########################################################################
   def NiceHash.set_values(hash_array, hash_values)
     hashv = Hash.new()
-
     if hash_array.is_a?(Hash) and hash_array.size > 0
       hash_array.each do |k, v|
         if hash_values.keys.include?(k)
           hashv[k] = hash_values[k]
-        elsif v.is_a?(Array) or v.is_a?(Hash)
+        elsif v.is_a?(Array)
+          hashv[k] = NiceHash.set_values(v, hash_values)
+        elsif v.is_a?(Hash)
           hashv[k] = NiceHash.set_values(v, hash_values)
         else
           hashv[k] = v
         end
+      end
+      hash_values.each do |k, v|
+        hashv = NiceHash.set_nested(hashv, k, v, true) if k.is_a?(Hash)
       end
       return hashv
     elsif hash_array.is_a?(Array) and hash_array.size > 0
@@ -487,7 +491,7 @@ class NiceHash
       select_hash_key = nil
     else
       puts "NiceHash.validate wrong pattern_hash supplied #{patterns_hash.inspect}"
-      return {error: :error}
+      return { error: :error }
     end
     values = values_hash_to_validate
     results = {}
@@ -793,7 +797,7 @@ class NiceHash
   #
   #  @param hash [Hash] The hash we want to translate
   #
-  #  @return [String] 
+  #  @return [String]
   #
   #  @example
   #    my_hash =  { uno: {dos: :tres} }
@@ -803,7 +807,7 @@ class NiceHash
   def self.transtring(hash)
     keys = []
     if hash.is_a?(Hash)
-      hash.each do |k,v|
+      hash.each do |k, v|
         if v.is_a?(Hash)
           keys << k
           keys << trans(v)
@@ -824,7 +828,7 @@ class NiceHash
   #  @param hash [Hash] The hash we want
   #  @param nested_key [Hash] [String] String with the nested key: 'uno.dos.tres' or a hash { uno: {dos: :tres} }
   #
-  #  @return [Hash] 
+  #  @return [Hash]
   #
   #  @example
   #  my_hash = { user: {
@@ -842,15 +846,65 @@ class NiceHash
   ##################################################
   def self.delete_nested(hash, nested_key)
     nested_key = transtring(nested_key)
-    keys = nested_key.split('.')
+    keys = nested_key.split(".")
     if keys.size == 1
       hash.delete(nested_key.to_sym)
     else
       last_key = keys[-1]
-      eval("hash.#{keys[0..(keys.size-2)].join(".")}.delete(:#{last_key})")
+      eval("hash.#{keys[0..(keys.size - 2)].join(".")}.delete(:#{last_key})")
     end
     return hash
   end
 
-
+  ##################################################
+  #  sets the supplied value on the supplied nested key
+  #
+  #  @param hash [Hash] The hash we want
+  #  @param nested_key [Hash] [String] String with the nested key: 'uno.dos.tres' or a hash { uno: {dos: :tres} }
+  #  @param value [] value to set
+  #
+  #  @return [Hash]
+  #
+  #  @example
+  #  my_hash = { user: {
+  #                      address: {
+  #                             city: 'Madrid',
+  #                             country: 'Spain'
+  #                          },
+  #                      name: 'Peter',
+  #                      age: 33
+  #                    },
+  #              customer: true
+  #  }
+  #    NiceHash.set_nested(my_hash, 'user.address.city', 'Barcelona')
+  #    #>{:user=>{:address=>{:city=>'Barcelona', :country=>"Spain"}, :name=>"Peter", :age=>33}, :customer=>true}
+  ##################################################
+  def self.set_nested(hash, nested_key, value, only_if_exist = false)
+    nested_key = transtring(nested_key)
+    keys = nested_key.split(".")
+    if keys.size == 1
+      hash[nested_key.to_sym] = value unless only_if_exist and !hash.key?(nested_key.to_sym)
+    else
+      exist = true
+      if only_if_exist
+        ht = hash.deep_copy
+        keys.each do |k|
+          unless ht.key?(k.to_sym)
+            exist = false
+            break
+          end
+          ht = ht[k.to_sym]
+        end
+      end
+      if !only_if_exist or (only_if_exist and exist)
+        if value.is_a?(String)
+          eval("hash.#{nested_key}='#{value}'")
+        else
+          #todo: consider other kind of objects apart of strings
+          eval("hash.#{nested_key}=#{value}")
+        end
+      end
+    end
+    return hash
+  end
 end

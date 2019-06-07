@@ -39,11 +39,11 @@ class String
                      end
         if result_tmp.size == 1
           result = if result_tmp.values.is_a?(Array) && (result_tmp.values.size == 1)
-                    if result_tmp.values[0].nil? 
-                      {}
-                    else
-                      result_tmp.values[0]
-                    end
+                     if result_tmp.values[0].nil?
+                       {}
+                     else
+                       result_tmp.values[0]
+                     end
                    else
                      result_tmp.values
                    end
@@ -184,7 +184,6 @@ class Hash
     Marshal.load(Marshal.dump(self))
   end
 
-
   ###########################################################################
   # It will filter the hash by the key specified on select_hash_key.
   # In case a subhash specified on a value it will be selected only the value of the key specified on select_hash_key
@@ -295,7 +294,7 @@ class Array
     no_key = true
     self.map do |hash|
       if hash.is_a?(Hash)
-        array <<  hash[m]
+        array << hash[m]
         no_key = false
       else
         array << nil
