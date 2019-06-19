@@ -53,6 +53,8 @@ my_hash={
     loginame: :"5-10:/xn/", 
     [:pwd1, :pwd2, :pwd3] => :"5-10:L/n/",
     name: :"10-20:T_/x/",
+    age: 18..120,
+    euros: 0.0..3000.0,
     draws: [
         {
             drawId: :"5:N",
@@ -92,6 +94,8 @@ Explanations of the different fields:
     loginname: from 5 to 10 characters, mandatory to have lower letters and numbers
     pwd, pwd2, pwd3: will have the same value. The value from 5 to 10 chars, optional capital and lower letters, necessary to contain numbers
     name: from 10 to 20 chars. Optional national characters and space, necessary lower letters.
+    age: number from 18 to 120
+    euros: float number from 0.0 to 3000.0
     drawId: 5 numbers
     drawName: 10 letters and/or numbers
     type: 'Weekely' or 'Daily'
@@ -236,6 +240,8 @@ On this example new_hash will contain:
     loginame: :"5-10:/xn/", 
     [:pwd1, :pwd2, :pwd3] => :"5-10:L/n/",
     name: :"10-20:T_/x/",
+    age: 18..120,
+    euros: 0.0..3000.0,
     draws: [
         {
             drawId: :"5:N",
@@ -294,6 +300,8 @@ In case of filtering by :correct new_hash would have a value like this for examp
  :pwd2=>"E6hz9YS7",
  :pwd3=>"E6hz9YS7",
  :name=>"OyTQNfEyPOzVYMxPym",
+ :age=> 19,
+ :euros=> 2133.34,
  :draws=>
   [{:drawId=>"54591",
     :drawName=>"cr5Q7pq4G8",
@@ -351,6 +359,8 @@ On this example wrong_min_length will contain something like:
  :pwd2=>"4XDx",
  :pwd3=>"4XDx",
  :name=>"bU",
+ :age=> 5,
+ :euros=> -452.311,
  :draws=>
   [{:drawId=>"", :drawName=>"P03AgdMqV", :type=>"Dail", :owner=>"dYzLRMCnVc"},
    {:drawId=>"", :drawName=>"qw", :type=>"Dail", :owner=>"zkHhTEzM"}],

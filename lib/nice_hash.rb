@@ -359,9 +359,7 @@ class NiceHash
           else
             value = NiceHash.generate(value, select_hash_key, expected_errors: expected_errors)
           end
-        end
-
-        if value.kind_of?(String) or value.kind_of?(Symbol)
+        elsif value.kind_of?(String) or value.kind_of?(Symbol)
           if ((StringPattern.optimistic and value.kind_of?(String)) or value.kind_of?(Symbol)) and value.to_s.scan(/^!?\d+-?\d*:.+/).size > 0
             hashv[key] = StringPattern.generate(value, expected_errors: expected_errors)
           elsif ((StringPattern.optimistic and value.kind_of?(String)) or value.kind_of?(Symbol)) and value.to_s.scan(/^([\w\s\-]+\|)+[\w\s\-]+$/).size > 0
@@ -414,6 +412,28 @@ class NiceHash
               value_ret << ret
             }
             hashv[key] = value_ret
+          end
+        elsif value.kind_of?(Range)
+          if expected_errors.empty?
+            hashv[key] = rand(value)  
+          else
+            #jal
+            hashv[key] = rand(value)
+            expected_errors.each do |er|
+              if er == :min_length
+                hashv[key] = rand((value.first-value.last)..value.first-1)
+              elsif er == :max_length
+                hashv[key] = rand((value.last+1)..(value.last*2))
+              elsif er == :length
+                if rand.round==1
+                  hashv[key] = rand((value.first-value.last)..value.first-1)
+                else
+                  hashv[key] = rand((value.last+1)..(value.last*2))
+                end
+              elsif er == :value
+                hashv[key] = :"1-10:N/L/".gen
+              end
+            end
           end
         elsif value.kind_of?(Proc)
           hashv[key] = value.call
