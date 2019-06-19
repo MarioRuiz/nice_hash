@@ -437,8 +437,7 @@ class NiceHash
         elsif value.kind_of?(Proc)
           hashv[key] = value.call
         elsif value.kind_of?(Regexp)
-          #jal
-          hashv[key] = value.generate
+          hashv[key] = value.generate(expected_errors: expected_errors)
         else
           hashv[key] = value
         end
@@ -549,7 +548,11 @@ class NiceHash
             elsif values[key] < value.first or values[key] > value.last
               results[key] = false
             end
-            #jal
+          elsif value.kind_of?(Regexp)
+            rex = Regexp.new("^#{value}$")
+            unless values[key].match?(rex)
+              results[key] = false
+            end
           elsif value.kind_of?(Array)
             array_pattern = false
             complex_data = false
