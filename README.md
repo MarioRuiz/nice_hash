@@ -495,6 +495,8 @@ After using the bury method default_values will contain:
  :pwd2=>"x33exx",
  :pwd3=>"x33exx",
  :name=>"HdmsjLxlEgYIFY",
+ :age=> 20,
+ :euros=> 155.11,
  :draws=>
   [{:drawId=>"12318",
     :drawName=>"FirstDraw",
@@ -518,16 +520,19 @@ After using the bury method default_values will contain:
 
 If you have a Hash that should follow the patterns you specified (in this example declared on my_hash) and you want to validate, then use the 'validate' method.
 
-This is particulary useful to test REST APIs responses in JSON
+This is specially useful to test REST APIs responses in JSON
 
 If we have a hash with these values:
 
 ```ruby
-{:loginame=>"rdewvqur",
+values = { 
+ :loginame=>"rdewvqur",
  :pwd1=>"d3ulo",
  :pwd2=>"d3ulo",
  :pwd3=>"d3ulo",
  :name=>"LTqVKxxFCTqpkdjFkxU",
+ :age=> 20,
+ :euros=> 155.11,
  :draws=>
   [{:drawId=>"54a43",
     :drawName=>"h3F24yjMWp",
@@ -547,7 +552,7 @@ If we have a hash with these values:
  :display=>true}
 ```
 
-To validate those values taking in consideration was is stated on my_hash:
+To validate those values against the patterns defined on my_hash:
 
 ```ruby
 results_all_fields = my_hash.validate :correct, values

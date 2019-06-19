@@ -417,7 +417,6 @@ class NiceHash
           if expected_errors.empty?
             hashv[key] = rand(value)  
           else
-            #jal
             hashv[key] = rand(value)
             expected_errors.each do |er|
               if er == :min_length
@@ -438,6 +437,7 @@ class NiceHash
         elsif value.kind_of?(Proc)
           hashv[key] = value.call
         elsif value.kind_of?(Regexp)
+          #jal
           hashv[key] = value.generate
         else
           hashv[key] = value
@@ -543,6 +543,13 @@ class NiceHash
             elsif !only_patterns
               results[key] = false unless value.to_s == values[key].to_s
             end
+          elsif value.kind_of?(Range)
+            if values[key].class != value.first.class or values[key].class != value.last.class
+              results[key] = false
+            elsif values[key] < value.first or values[key] > value.last
+              results[key] = false
+            end
+            #jal
           elsif value.kind_of?(Array)
             array_pattern = false
             complex_data = false
