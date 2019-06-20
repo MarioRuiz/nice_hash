@@ -455,6 +455,17 @@ class NiceHash
               end
             end
           end
+        elsif value.kind_of?(Module) and value == Boolean
+          if expected_errors.empty?
+            hashv[key] = (rand.round == 0)
+          else
+            hashv[key] = (rand.round == 0)
+            expected_errors.each do |er|
+              if er == :value
+                hashv[key] = '1-10:L'.gen
+              end
+            end
+          end
         elsif value.kind_of?(Proc)
           hashv[key] = value.call
         elsif value.kind_of?(Regexp)
@@ -575,6 +586,8 @@ class NiceHash
             else
               results[key] = false
             end
+          elsif value.kind_of?(Module) and value == Boolean
+            results[key] = false unless values[key].is_a?(Boolean)
           elsif value.kind_of?(Regexp)
             rex = Regexp.new("^#{value}$")
             unless values[key].match?(rex)

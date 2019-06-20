@@ -56,6 +56,7 @@ my_hash={
     age: 18..120,
     euros: 0.0..3000.0,
     created: DateTime,
+    customer: Boolean,
     draws: [
         {
             drawId: :"5:N",
@@ -98,6 +99,7 @@ Explanations of the different fields:
     age: number from 18 to 120
     euros: float number from 0.0 to 3000.0
     created: Time stamp format, 2019-06-20T11:40:34.547Z
+    customer: Boolean, (true or false)
     drawId: 5 numbers
     drawName: 10 letters and/or numbers
     type: 'Weekely' or 'Daily'
@@ -245,6 +247,7 @@ On this example new_hash will contain:
     age: 18..120,
     euros: 0.0..3000.0,
     created: DateTime,
+    customer: Boolean,
     draws: [
         {
             drawId: :"5:N",
@@ -306,6 +309,7 @@ In case of filtering by :correct new_hash would have a value like this for examp
  :age=> 19,
  :euros=> 2133.34,
  :created=> "2019-06-20T11:40:34.547Z",
+ :customer=> true,
  :draws=>
   [{:drawId=>"54591",
     :drawName=>"cr5Q7pq4G8",
@@ -366,6 +370,7 @@ On this example wrong_min_length will contain something like:
  :age=> 5,
  :euros=> -452.311,
  :created=> "2019-06-20T11:40:34.547",
+ :customer=> true,
  :draws=>
   [{:drawId=>"", :drawName=>"P03AgdMqV", :type=>"Dail", :owner=>"dYzLRMCnVc"},
    {:drawId=>"", :drawName=>"qw", :type=>"Dail", :owner=>"zkHhTEzM"}],
@@ -503,6 +508,7 @@ After using the bury method default_values will contain:
  :age=> 20,
  :euros=> 155.11,
  :created=>"2019-06-20T11:40:34.547Z",
+ :customer=> false,
  :draws=>
   [{:drawId=>"12318",
     :drawName=>"FirstDraw",
@@ -540,6 +546,7 @@ values = {
  :age=> 20,
  :euros=> 155.11,
  :created=>"2019-06-20T11:40:34.547Z",
+ :customer=> false,
  :draws=>
   [{:drawId=>"54a43",
     :drawName=>"h3F24yjMWp",
@@ -786,6 +793,17 @@ If you want to delete a key on a nested hash you can use `delete_nested` and sup
   }
     NiceHash.delete_nested(my_hash, 'user.address.city')
     #>{:user=>{:address=>{:country=>"Spain"}, :name=>"Peter", :age=>33}, :customer=>true}
+
+```
+
+We added the possibility to check if a value is boolean or not since in Ruby doesn't exist, just TrueClass and FalseClass
+
+```ruby
+value = true
+text = 'true'
+
+value.is_a?(Boolean) #> true
+text.is_a?(Boolean) #> false
 
 ```
 

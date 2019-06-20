@@ -307,3 +307,8 @@ class Array
     end
   end
 end
+
+# false.is_a?(Boolean) #> true
+module Boolean; end
+class TrueClass; include Boolean; end
+class FalseClass; include Boolean; end
