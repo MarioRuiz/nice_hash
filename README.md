@@ -55,6 +55,7 @@ my_hash={
     name: :"10-20:T_/x/",
     age: 18..120,
     euros: 0.0..3000.0,
+    created: DateTime,
     draws: [
         {
             drawId: :"5:N",
@@ -96,6 +97,7 @@ Explanations of the different fields:
     name: from 10 to 20 chars. Optional national characters and space, necessary lower letters.
     age: number from 18 to 120
     euros: float number from 0.0 to 3000.0
+    created: Time stamp format, 2019-06-20T11:40:34.547Z
     drawId: 5 numbers
     drawName: 10 letters and/or numbers
     type: 'Weekely' or 'Daily'
@@ -242,6 +244,7 @@ On this example new_hash will contain:
     name: :"10-20:T_/x/",
     age: 18..120,
     euros: 0.0..3000.0,
+    created: DateTime,
     draws: [
         {
             drawId: :"5:N",
@@ -302,6 +305,7 @@ In case of filtering by :correct new_hash would have a value like this for examp
  :name=>"OyTQNfEyPOzVYMxPym",
  :age=> 19,
  :euros=> 2133.34,
+ :created=> "2019-06-20T11:40:34.547Z",
  :draws=>
   [{:drawId=>"54591",
     :drawName=>"cr5Q7pq4G8",
@@ -361,6 +365,7 @@ On this example wrong_min_length will contain something like:
  :name=>"bU",
  :age=> 5,
  :euros=> -452.311,
+ :created=> "2019-06-20T11:40:34.547",
  :draws=>
   [{:drawId=>"", :drawName=>"P03AgdMqV", :type=>"Dail", :owner=>"dYzLRMCnVc"},
    {:drawId=>"", :drawName=>"qw", :type=>"Dail", :owner=>"zkHhTEzM"}],
@@ -497,6 +502,7 @@ After using the bury method default_values will contain:
  :name=>"HdmsjLxlEgYIFY",
  :age=> 20,
  :euros=> 155.11,
+ :created=>"2019-06-20T11:40:34.547Z",
  :draws=>
   [{:drawId=>"12318",
     :drawName=>"FirstDraw",
@@ -533,6 +539,7 @@ values = {
  :name=>"LTqVKxxFCTqpkdjFkxU",
  :age=> 20,
  :euros=> 155.11,
+ :created=>"2019-06-20T11:40:34.547Z",
  :draws=>
   [{:drawId=>"54a43",
     :drawName=>"h3F24yjMWp",

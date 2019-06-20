@@ -434,6 +434,27 @@ class NiceHash
               end
             end
           end
+        elsif value.kind_of?(Class) and value == DateTime
+          if expected_errors.empty?
+            hashv[key] = Time.now.stamp
+          else
+            hashv[key] = Time.now.stamp
+            expected_errors.each do |er|
+              if er == :min_length
+                hashv[key] = hashv[key].chop
+              elsif er == :max_length
+                hashv[key] = hashv[key] + "Z"
+              elsif er == :length
+                if rand.round==1
+                  hashv[key] = hashv[key].chop
+                else
+                  hashv[key] = hashv[key] + "Z"
+                end
+              elsif er == :value
+                hashv[key][rand(hashv[key].size-1)] = '1:L'.gen
+              end
+            end
+          end
         elsif value.kind_of?(Proc)
           hashv[key] = value.call
         elsif value.kind_of?(Regexp)
@@ -546,6 +567,12 @@ class NiceHash
             if values[key].class != value.first.class or values[key].class != value.last.class
               results[key] = false
             elsif values[key] < value.first or values[key] > value.last
+              results[key] = false
+            end
+          elsif value.kind_of?(Class) and value == DateTime
+            if values[key].size == 24
+              d = Date.strptime(values[key], '%Y-%m-%dT%H:%M:%S.%LZ') rescue results[key] = false
+            else
               results[key] = false
             end
           elsif value.kind_of?(Regexp)
