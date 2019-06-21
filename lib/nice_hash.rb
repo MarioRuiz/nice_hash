@@ -550,12 +550,10 @@ class NiceHash
       puts "NiceHash.validate wrong pattern_hash supplied #{patterns_hash.inspect}"
       return { error: :error }
     end
-    if patterns_hash.keys.size == get_all_keys(patterns_hash).size and values.keys.size != get_all_keys(values)
-    end
     values = values_hash_to_validate
-    if patterns_hash.keys.size == get_all_keys(patterns_hash).size and values.keys.size != get_all_keys(values)
+    if pattern_hash.keys.size == get_all_keys(pattern_hash).size and values.keys.size != get_all_keys(values)
       # all patterns on patterns_hash are described on first level, so no same structure than values
-
+      pattern_hash = values.set_values(pattern_hash)
     end
     results = {}
     same_values = {}
