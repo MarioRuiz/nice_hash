@@ -407,8 +407,13 @@ class NiceHash
           unless array_pattern
             value_ret = Array.new
             value.each { |v|
-              ret = NiceHash.generate(v, select_hash_key, expected_errors: expected_errors)
-              ret = v if ret.kind_of?(Hash) and ret.size == 0
+              if v.is_a?(Hash)
+                ret = NiceHash.generate(v, select_hash_key, expected_errors: expected_errors)
+              else
+                ret = NiceHash.generate({doit: v}, select_hash_key, expected_errors: expected_errors)
+                ret = ret[:doit] if ret.is_a?(Hash) and ret.key?(:doit)
+              end
+              ret = v if ret.kind_of?(Hash) and ret.size == 0 
               value_ret << ret
             }
             hashv[key] = value_ret
@@ -608,17 +613,43 @@ class NiceHash
               end
             }
             unless array_pattern or results.include?(key)
-              i = 0
-              value.each { |v|
-                res = NiceHash.validate([v, select_hash_key], values[key][i], only_patterns: only_patterns)
-                if res.size > 0
-                  results[key] = Array.new() if !results.keys.include?(key)
-                  results[key][i] = res
+              if value.size == 1 and values[key].size > 1
+                # for the case value == ['Ford|Newton|Seat'] and values == ['Ford', 'Newton', 'Ford']
+                i= 0
+                values[key].each do |v|
+                  if value[0].is_a?(Hash)
+                    res = NiceHash.validate([value[0], select_hash_key], v, only_patterns: only_patterns)
+                  else
+                    # for the case {cars: ['Ford|Newton|Seat']}
+                    res = NiceHash.validate([{key => value[0]}, select_hash_key], {key => v}, only_patterns: only_patterns)
+                    #res = {key => res[:doit]} if res.is_a?(Hash) and res.key?(:doit)
+                    array_pattern = true
+                  end
+                  if res.size > 0
+                    results[key] = Array.new() if !results.keys.include?(key)
+                    results[key][i] = res
+                  end
+                  i += 1
                 end
-                i += 1
-              }
+              else
+                i = 0
+                value.each { |v|
+                  if v.is_a?(Hash)
+                    res = NiceHash.validate([v, select_hash_key], values[key][i], only_patterns: only_patterns)
+                  else
+                    # for the case {cars: ['Ford|Newton|Seat']}
+                    res = NiceHash.validate([{key => v}, select_hash_key], {key => values[key][i]}, only_patterns: only_patterns)
+                    array_pattern = true
+                  end
+                  if res.size > 0
+                    results[key] = Array.new() if !results.keys.include?(key)
+                    results[key][i] = res
+                  end
+                  i += 1
+                }
+              end
             end
-            unless array_pattern or only_patterns or results.include?(key) or complex_data
+            unless array_pattern or only_patterns or results.include?(key) or complex_data 
               results[key] = false unless value == values[key]
             end
           else
