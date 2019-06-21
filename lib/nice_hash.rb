@@ -937,6 +937,31 @@ class NiceHash
   end
 
   ##################################################
+  #  Get all the keys of a hash
+  #
+  #  @param hash [Hash] The hash
+  #
+  #  @return [Array]
+  #
+  #  @example
+  #    my_hash =  { uno: {dos: :tres} }
+  #    NiceHash.get_all_keys(my_hash)
+  #    #>[:uno, :dos, :tres]
+  ##################################################
+  def self.get_all_keys(h)
+    h.each_with_object([]) do |(k,v),keys|      
+      keys << k
+      keys.concat(get_all_keys(v)) if v.is_a? Hash
+      if v.is_a?(Array)
+        v.each do |vv|
+          keys.concat(get_all_keys(vv)) if v.is_a? Hash or Array
+        end
+      end
+    end
+  end
+  
+
+  ##################################################
   #  Deletes the supplied key
   #
   #  @param hash [Hash] The hash we want
