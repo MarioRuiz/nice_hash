@@ -359,7 +359,8 @@ class NiceHash
           else
             value = NiceHash.generate(value, select_hash_key, expected_errors: expected_errors)
           end
-        elsif value.kind_of?(String) or value.kind_of?(Symbol)
+        end
+        if value.kind_of?(String) or value.kind_of?(Symbol)
           if ((StringPattern.optimistic and value.kind_of?(String)) or value.kind_of?(Symbol)) and value.to_s.scan(/^!?\d+-?\d*:.+/).size > 0
             hashv[key] = StringPattern.generate(value, expected_errors: expected_errors)
           elsif ((StringPattern.optimistic and value.kind_of?(String)) or value.kind_of?(Symbol)) and value.to_s.scan(/^([\w\s\-]+\|)+[\w\s\-]+$/).size > 0
