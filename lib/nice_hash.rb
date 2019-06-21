@@ -550,7 +550,13 @@ class NiceHash
       puts "NiceHash.validate wrong pattern_hash supplied #{patterns_hash.inspect}"
       return { error: :error }
     end
+    if patterns_hash.keys.size == get_all_keys(patterns_hash).size and values.keys.size != get_all_keys(values)
+    end
     values = values_hash_to_validate
+    if patterns_hash.keys.size == get_all_keys(patterns_hash).size and values.keys.size != get_all_keys(values)
+      # all patterns on patterns_hash are described on first level, so no same structure than values
+
+    end
     results = {}
     same_values = {}
     if pattern_hash.kind_of?(Hash) and pattern_hash.size > 0
@@ -617,20 +623,24 @@ class NiceHash
               if value.size == 1 and values[key].size > 1
                 # for the case value == ['Ford|Newton|Seat'] and values == ['Ford', 'Newton', 'Ford']
                 i= 0
-                values[key].each do |v|
-                  if value[0].is_a?(Hash)
-                    res = NiceHash.validate([value[0], select_hash_key], v, only_patterns: only_patterns)
-                  else
-                    # for the case {cars: ['Ford|Newton|Seat']}
-                    res = NiceHash.validate([{key => value[0]}, select_hash_key], {key => v}, only_patterns: only_patterns)
-                    #res = {key => res[:doit]} if res.is_a?(Hash) and res.key?(:doit)
-                    array_pattern = true
+                if values[key].class == value.class
+                  values[key].each do |v|
+                    if value[0].is_a?(Hash)
+                      res = NiceHash.validate([value[0], select_hash_key], v, only_patterns: only_patterns)
+                    else
+                      # for the case {cars: ['Ford|Newton|Seat']}
+                      res = NiceHash.validate([{key => value[0]}, select_hash_key], {key => v}, only_patterns: only_patterns)
+                      #res = {key => res[:doit]} if res.is_a?(Hash) and res.key?(:doit)
+                      array_pattern = true
+                    end
+                    if res.size > 0
+                      results[key] = Array.new() if !results.keys.include?(key)
+                      results[key][i] = res
+                    end
+                    i += 1
                   end
-                  if res.size > 0
-                    results[key] = Array.new() if !results.keys.include?(key)
-                    results[key][i] = res
-                  end
-                  i += 1
+                else
+                  results[key] = false
                 end
               else
                 i = 0
@@ -949,12 +959,12 @@ class NiceHash
   #    #>[:uno, :dos, :tres]
   ##################################################
   def self.get_all_keys(h)
-    h.each_with_object([]) do |(k,v),keys|      
+    h.each_with_object([]) do |(k,v),keys|
       keys << k
       keys.concat(get_all_keys(v)) if v.is_a? Hash
       if v.is_a?(Array)
         v.each do |vv|
-          keys.concat(get_all_keys(vv)) if v.is_a? Hash or Array
+          keys.concat(get_all_keys(vv)) if vv.is_a? Hash or vv.is_a? Array
         end
       end
     end
