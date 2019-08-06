@@ -746,7 +746,7 @@ Valid patterns:
 - Boolean: specifying Boolean will check if the value is TrueClass or FalseClass
 - ranges: Any kind of numeric ranges, for example: 
   - 10..400
-  - 20..50
+  - -20..50
   - 60.0..500.0
   - 10.. (from 10 to infinite) Only from Ruby 2.6
 - DateTime: it will verify if the value is following Time stamp string '2019-06-20T12:01:09.971Z' or if the object is a Time, Date or DateTime class
