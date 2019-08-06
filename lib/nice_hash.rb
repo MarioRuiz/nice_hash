@@ -411,29 +411,29 @@ class NiceHash
               if v.is_a?(Hash)
                 ret = NiceHash.generate(v, select_hash_key, expected_errors: expected_errors)
               else
-                ret = NiceHash.generate({doit: v}, select_hash_key, expected_errors: expected_errors)
+                ret = NiceHash.generate({ doit: v }, select_hash_key, expected_errors: expected_errors)
                 ret = ret[:doit] if ret.is_a?(Hash) and ret.key?(:doit)
               end
-              ret = v if ret.kind_of?(Hash) and ret.size == 0 
+              ret = v if ret.kind_of?(Hash) and ret.size == 0
               value_ret << ret
             }
             hashv[key] = value_ret
           end
         elsif value.kind_of?(Range)
           if expected_errors.empty?
-            hashv[key] = rand(value)  
+            hashv[key] = rand(value)
           else
             hashv[key] = rand(value)
             expected_errors.each do |er|
               if er == :min_length
-                hashv[key] = rand((value.first-value.last)..value.first-1)
+                hashv[key] = rand((value.first - value.last)..value.first - 1)
               elsif er == :max_length
-                hashv[key] = rand((value.last+1)..(value.last*2))
+                hashv[key] = rand((value.last + 1)..(value.last * 2))
               elsif er == :length
-                if rand.round==1
-                  hashv[key] = rand((value.first-value.last)..value.first-1)
+                if rand.round == 1
+                  hashv[key] = rand((value.first - value.last)..value.first - 1)
                 else
-                  hashv[key] = rand((value.last+1)..(value.last*2))
+                  hashv[key] = rand((value.last + 1)..(value.last * 2))
                 end
               elsif er == :value
                 hashv[key] = :"1-10:N/L/".gen
@@ -451,13 +451,13 @@ class NiceHash
               elsif er == :max_length
                 hashv[key] = hashv[key] + "Z"
               elsif er == :length
-                if rand.round==1
+                if rand.round == 1
                   hashv[key] = hashv[key].chop
                 else
                   hashv[key] = hashv[key] + "Z"
                 end
               elsif er == :value
-                hashv[key][rand(hashv[key].size-1)] = '1:L'.gen
+                hashv[key][rand(hashv[key].size - 1)] = "1:L".gen
               end
             end
           end
@@ -468,7 +468,7 @@ class NiceHash
             hashv[key] = (rand.round == 0)
             expected_errors.each do |er|
               if er == :value
-                hashv[key] = '1-10:L'.gen
+                hashv[key] = "1-10:L".gen
               end
             end
           end
@@ -591,8 +591,10 @@ class NiceHash
               results[key] = false
             end
           elsif value.kind_of?(Class) and value == DateTime
-            if values[key].size == 24
-              d = Date.strptime(values[key], '%Y-%m-%dT%H:%M:%S.%LZ') rescue results[key] = false
+            if values[key].is_a?(String) and values[key].size == 24
+              d = Date.strptime(values[key], "%Y-%m-%dT%H:%M:%S.%LZ") rescue results[key] = false
+            elsif values[key].is_a?(Time) or values[key].is_a?(Date) or values[key].is_a?(DateTime)
+              # correct
             else
               results[key] = false
             end
@@ -620,14 +622,14 @@ class NiceHash
             unless array_pattern or results.include?(key)
               if value.size == 1 and values[key].size > 1
                 # for the case value == ['Ford|Newton|Seat'] and values == ['Ford', 'Newton', 'Ford']
-                i= 0
+                i = 0
                 if values[key].class == value.class
                   values[key].each do |v|
                     if value[0].is_a?(Hash)
                       res = NiceHash.validate([value[0], select_hash_key], v, only_patterns: only_patterns)
                     else
                       # for the case {cars: ['Ford|Newton|Seat']}
-                      res = NiceHash.validate([{key => value[0]}, select_hash_key], {key => v}, only_patterns: only_patterns)
+                      res = NiceHash.validate([{ key => value[0] }, select_hash_key], { key => v }, only_patterns: only_patterns)
                       #res = {key => res[:doit]} if res.is_a?(Hash) and res.key?(:doit)
                       array_pattern = true
                     end
@@ -647,7 +649,7 @@ class NiceHash
                     res = NiceHash.validate([v, select_hash_key], values[key][i], only_patterns: only_patterns)
                   else
                     # for the case {cars: ['Ford|Newton|Seat']}
-                    res = NiceHash.validate([{key => v}, select_hash_key], {key => values[key][i]}, only_patterns: only_patterns)
+                    res = NiceHash.validate([{ key => v }, select_hash_key], { key => values[key][i] }, only_patterns: only_patterns)
                     array_pattern = true
                   end
                   if res.size > 0
@@ -658,7 +660,7 @@ class NiceHash
                 }
               end
             end
-            unless array_pattern or only_patterns or results.include?(key) or complex_data 
+            unless array_pattern or only_patterns or results.include?(key) or complex_data
               results[key] = false unless value == values[key]
             end
           else
@@ -863,6 +865,7 @@ class NiceHash
   #  @param structure [Array] [Hash] Contains the structure that should follow the replica. It can be a nested combination of arrays and hashes.
   #  @param replica [Array] [Hash] Contains the element to be verified on following the supplied structure. It can be a nested combination of arrays and hashes.
   #  @param compare_only_if_exist_key [Boolean] (Default false) If true, in case an element exist on structure but doesn't exist on replica won't be verified.
+  #  @param patterns [Hash] add verification of data values following the patterns supplied on a one level hash
   #
   #  @return [Boolean] true in case replica follows the structure supplied
   #
@@ -879,39 +882,49 @@ class NiceHash
   #    NiceHash.compare_structure(my_structure, my_replica)
   #    #>true
   ##################################################
-  def NiceHash.compare_structure(structure, replica, compare_only_if_exist_key = false)
+  def NiceHash.compare_structure(structure, replica, compare_only_if_exist_key = false, patterns = {})
     unless structure.class == replica.class or
-           ((structure.is_a?(TrueClass) or structure.is_a?(FalseClass)) and (replica.is_a?(TrueClass) or replica.is_a?(FalseClass)))
+            ((structure.is_a?(TrueClass) or structure.is_a?(FalseClass)) and (replica.is_a?(TrueClass) or replica.is_a?(FalseClass)))
       puts "NiceHash.compare_structure: different object type #{structure.class} is not #{replica.class}. expected: #{structure.inspect}. found: #{replica.inspect}."
       return false
     end
+    success = true
     if structure.is_a?(Hash)
       structure.each do |key, value|
+        if patterns.key?(key) and replica.key?(key)
+          unless (patterns[key].is_a?(Array) and replica[key].is_a?(Array) and replica[key].empty?) or 
+            {key => patterns[key]}.validate({key => replica[key]}).empty?
+            puts "NiceHash.compare_structure: key :#{key} not following pattern #{patterns[key]}. value: #{replica[key]}"
+            success = false
+          end
+        end
+
         if compare_only_if_exist_key and replica.key?(key)
-          unless compare_structure(value, replica[key], compare_only_if_exist_key)
+          unless compare_structure(value, replica[key], compare_only_if_exist_key, patterns)
             puts "NiceHash.compare_structure: key :#{key} different."
-            return false
+            success = false
           end
         elsif compare_only_if_exist_key == false
           unless replica.key?(key)
-            puts "NiceHash.compare_structure: key :#{key} different."
-            return false 
-          end
-          unless compare_structure(value, replica[key], compare_only_if_exist_key)
-            puts "NiceHash.compare_structure: key :#{key} different."
-            return false 
+            puts "NiceHash.compare_structure: key :#{key} missing."
+            success = false
+          else
+            unless compare_structure(value, replica[key], compare_only_if_exist_key, patterns)
+              puts "NiceHash.compare_structure: key :#{key} different."
+              success = false
+            end
           end
         end
       end
     elsif structure.is_a?(Array)
       # compare all elements of replica with the structure of the first element on structure
       replica.each do |elem|
-        unless compare_structure(structure[0], elem, compare_only_if_exist_key)
-          return false 
+        unless compare_structure(structure[0], elem, compare_only_if_exist_key, patterns)
+          success = false
         end
       end
     end
-    return true
+    return success
   end
 
   ##################################################
@@ -957,7 +970,7 @@ class NiceHash
   #    #>[:uno, :dos, :tres]
   ##################################################
   def self.get_all_keys(h)
-    h.each_with_object([]) do |(k,v),keys|
+    h.each_with_object([]) do |(k, v), keys|
       keys << k
       keys.concat(get_all_keys(v)) if v.is_a? Hash
       if v.is_a?(Array)
@@ -967,7 +980,6 @@ class NiceHash
       end
     end
   end
-  
 
   ##################################################
   #  Deletes the supplied key

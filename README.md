@@ -736,6 +736,22 @@ Another example that will return false since customer key is missing on first va
 
 Also you can use a third parameter, compare_only_if_exist_key (Boolean), by default false. If true, in case an element exist on structure but doesn't exist on replica won't be verified.
 
+
+
+The last parameter (patterns) allow you to add verification of data values following the patterns supplied on a one level hash.
+
+Valid patterns:
+- a regular expression
+- any string_pattern, more info: string_pattern project: https://github.com/MarioRuiz/string_pattern
+- Boolean: specifying Boolean will check if the value is TrueClass or FalseClass
+- ranges: Any kind of numeric ranges, for example: 
+  - 10..400
+  - 20..50
+  - 60.0..500.0
+  - 10.. (from 10 to infinite) Only from Ruby 2.6
+- DateTime: it will verify if the value is following Time stamp string '2019-06-20T12:01:09.971Z' or if the object is a Time, Date or DateTime class
+- selectors, one of the values. Example: "uno|dos|tres"
+
 ### Other useful methods
 
 In case you need the time stamp, we added the method `stamp` to the `Time` class
