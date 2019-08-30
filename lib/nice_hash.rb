@@ -99,6 +99,8 @@ class NiceHash
   #   #> {:name=>"Peter", :address=>"\#$$$$$", :city=>"London", :products=> [{:name=>:"10:Ln", :price=>"1000"}, {:name=>:"10:Ln", :price=>"1000"}]}
   # Using it directly on Hash class, set_values(hash_values):
   #   new_hash = my_hash.set_values({city: 'London', price: '1000'})
+  # Setting specific nested keys
+  #   new_hash = my_hash.set_values({'data.lab.products.price': 75, 'data.lab.beep': false})
   ###########################################################################
   def NiceHash.set_values(hash_array, hash_values)
     hashv = Hash.new()
@@ -107,9 +109,31 @@ class NiceHash
         if hash_values.keys.include?(k)
           hashv[k] = hash_values[k]
         elsif v.is_a?(Array)
-          hashv[k] = NiceHash.set_values(v, hash_values)
+          if hash_values.has_rkey?('\.') # the kind of 'uno.dos.tres'
+            new_hash_values = {}
+            hash_values.each do |kk,vv|
+              if kk.to_s.match?(/^#{k}\./)
+                kk = kk.to_s.gsub(/^#{k}\./, '').to_sym
+                new_hash_values[kk] = vv
+              end
+            end
+            hashv[k] = NiceHash.set_values(v, new_hash_values)
+          else
+            hashv[k] = NiceHash.set_values(v, hash_values)
+          end
         elsif v.is_a?(Hash)
-          hashv[k] = NiceHash.set_values(v, hash_values)
+          if hash_values.has_rkey?('\.') # the kind of 'uno.dos.tres'
+            new_hash_values = {}
+            hash_values.each do |kk,vv|
+              if kk.to_s.match?(/^#{k}\./)
+                kk = kk.to_s.gsub(/^#{k}\./, '').to_sym
+                new_hash_values[kk] = vv
+              end
+            end
+            hashv[k] = NiceHash.set_values(v, new_hash_values)
+          else
+            hashv[k] = NiceHash.set_values(v, hash_values)
+          end
         else
           hashv[k] = v
         end
@@ -602,7 +626,7 @@ class NiceHash
             results[key] = false unless values[key].is_a?(Boolean)
           elsif value.kind_of?(Regexp)
             rex = Regexp.new("^#{value}$")
-            unless values[key].match?(rex)
+            unless values[key].to_s.match?(rex)
               results[key] = false
             end
           elsif value.kind_of?(Array)

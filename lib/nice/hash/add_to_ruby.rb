@@ -253,6 +253,16 @@ class Hash
     NiceHash.set_values(self, hash_values)
   end
 
+  ###########################################################################
+  # Search if the hash contains the supplied key
+  # search can be a string, symbol or regexp. 
+  # In case of string or symbol it will return true even if only part of the key fits the 'search'
+  ###########################################################################
+  def has_rkey?(search)
+    search = Regexp.new(search.to_s) unless search.is_a?(Regexp)
+    !!keys.detect{ |key| key =~ search }
+  end
+
   alias gen generate
   alias val validate
   alias patterns pattern_fields

@@ -223,6 +223,9 @@ pp NiceHash.set_values(my_hash, { price: 75, beep: false } )
 # using the Hash class
 pp my_hash.set_values({ price: 75, beep: false })
 
+# setting specific nested keys
+pp my_hash.set_values({'data.lab.products.price': 75, 'data.lab.beep': false})
+
 ```
 
 ### Filtering / Selecting an specific key on the hash and subhashes
@@ -599,6 +602,7 @@ The possible validation values returned:
     :excluded_data: the resultant string will include one or more characters that should be excluded. It works only if excluded data supplied on the pattern.
     :string_set_not_allowed: it will include one or more characters that are not supposed to be on the string.
 
+You can also supply nested pattern keys for the patterns to be more specific: `{'draws.drawId': :"4:N"}`
 
 ### Change only one value at a time and return an Array of Hashes
 
