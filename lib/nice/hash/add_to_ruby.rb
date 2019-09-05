@@ -98,6 +98,16 @@ class Array
     json_string = "[#{join(",")}]"
     json_string.json(*keys)
   end
+
+
+  ###########################################################################
+  # Filter the array of hashes and returns only the specified keys
+  # More info: NiceHash.nice_filter
+  ###########################################################################
+  def nice_filter(keys)
+    NiceHash.nice_filter(self, keys)
+  end
+
 end
 
 require "date"
@@ -261,6 +271,14 @@ class Hash
   def has_rkey?(search)
     search = Regexp.new(search.to_s) unless search.is_a?(Regexp)
     !!keys.detect{ |key| key =~ search }
+  end
+
+  ###########################################################################
+  # Filter the hash and returns only the specified keys
+  # More info: NiceHash.nice_filter
+  ###########################################################################
+  def nice_filter(keys)
+    NiceHash.nice_filter(self, keys)
   end
 
   alias gen generate

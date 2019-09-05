@@ -175,6 +175,8 @@ new_hash = my_hash.generate
 puts new_hash.get_values(:address) #> {:address=>"21 Doom Av"}
 puts new_hash.get_values(:address, :zip) #> {:zip=>{:default=>"00000", :correct=>"42782"}, :address=>"21 Doom Av"}
 puts new_hash.get_values(:drawId) #> {:drawId=>["84914", "21158"]}
+#using nested keys
+puts new_hash.get_values(:'draws.drawId') #> {:'draws.drawId'=>["84914", "21158"]}
 ```
 
 In case of an array of hashes, you will be able also to access the different keys, for example:
@@ -274,6 +276,29 @@ On this example new_hash will contain:
     sex: :"male|female|other", #any of these values
     display: true
 }
+```
+
+Also you can filter the hash you want and return only the speficied keys by using the `nice_filter` method
+
+```ruby
+    my_hash = { user: {
+                        address: {
+                               city: 'Madrid',
+                               country: 'Spain'
+                            },
+                        name: 'Peter',
+                        age: 33,
+                        customers: [{name: 'Peter', currency: 'Euro'}, {name:'John', currency: 'Euro'}]
+                      },
+                customer: true
+    }
+    pp my_hash.nice_filter([:'user.address.city', :'customer', :'user.customers.name'])
+#>  {:user=>
+#>    {:address=>{:city=>"Madrid"},
+#>      :customers=>[{:name=>"Peter"}, {:name=>"John"}]
+#>    },
+#>   :customer=>true
+#>  }
 ```
 
 ### How to generate the hash with the criteria we want

@@ -1,4 +1,6 @@
 SP_ADD_TO_RUBY = true if !defined?(SP_ADD_TO_RUBY)
+#todo: add SP_USE_NESTED_KEYS = true
+
 require_relative "nice/hash/add_to_ruby" if SP_ADD_TO_RUBY
 
 require "string_pattern"
@@ -772,18 +774,25 @@ class NiceHash
   #                {"idt"=>3145,"name"=>"Special ticket"}
   #              ]
   #            }
-  #   keys: one key (string) or an array of keys
+  #   keys: one key (string) or an array of keys. key can be a nested key
   # output:
   #   a Hash of Arrays with all values found.
   #       Example of output with example.get_values("id","name")
   #           {"id"=>[334],"name"=>["Peter North"]}
   #       Example of output with example.get_values("idt")
   #           {"idt"=>[345,3123,3145]}
+  #       Example of output with example.get_values(:'tickets.idt')
+  #           {:"tickets.idt"=>[345,3123,3145]}
   #
   ####################################################
   def NiceHash.get_values(hashv, keys)
     if keys.kind_of?(String) or keys.kind_of?(Symbol)
       keys = [keys]
+    end
+    if (keys.grep(/\./)).empty?
+      nested = false
+    else
+      nested = true
     end
     result = Hash.new()
     number_of_results = Hash.new()
@@ -823,6 +832,7 @@ class NiceHash
         #if keys.include?(key) then
         #added to be able to access the keys with symbols to strings and opposite
         if keys.include?(key) or keys.include?(key.to_s) or keys.include?(key.to_sym)
+          #todo: check on next ruby versions since it will be not necessary to do it
           #added to be able to access the keys with symbols to strings and opposite
           key = key.to_s() if keys.include?(key.to_s)
           key = key.to_sym() if keys.include?(key.to_sym)
@@ -847,7 +857,19 @@ class NiceHash
           number_of_results[key] += 1
         end
         if value.kind_of?(Array) or value.kind_of?(Hash)
-          n_result = get_values(value, keys)
+          if nested
+            keys_nested = []
+            keys.grep(/^#{key}\./).each do |k|
+              keys_nested << k.to_s.gsub(/^#{key}\./,'').to_sym
+            end
+            n_result_tmp = get_values(value, keys_nested)
+            n_result = {}
+            n_result_tmp.each do |k,v|
+              n_result["#{key}.#{k}".to_sym] = v
+            end
+          else
+            n_result = get_values(value, keys)
+          end
           if n_result != :error
             n_result.each { |n_key, n_value|
               if result.has_key?(n_key)
@@ -1089,5 +1111,56 @@ class NiceHash
       end
     end
     return hash
+  end
+
+  ##################################################
+  #  Filter the hash supplied and returns only the specified keys
+  #
+  #  @param hash [Hash] The hash we want to filter
+  #  @param keys [Array] [Symbol] Array of symbols or symbol. Nested keys can be used: 'uno.dos.tres'
+  #
+  #  @return [Hash]
+  #
+  #  @example
+  #  my_hash = { user: {
+  #                      address: {
+  #                             city: 'Madrid',
+  #                             country: 'Spain'
+  #                          },
+  #                      name: 'Peter',
+  #                      age: 33,
+  #                      customers: [{name: 'Peter', currency: 'Euro'}, {name:'John', currency: 'Euro'}]
+  #                    },
+  #              customer: true
+  #  }
+  #    NiceHash.nice_filter(my_hash, [:'user.address.city', :'customer', :'user.customers.name'])
+  #    #> {:user => {:address => {:city => "Madrid"}, :customers => [{:name => "Peter"}, {:name => "John"}]}, :customer => true}
+  ##################################################
+  def self.nice_filter(hash, keys)
+    result = {}
+    keys = [keys] unless keys.is_a?(Array)
+    keys.each do |k|
+      kn = k.to_s.split('.')
+      if hash.is_a?(Hash) and hash.key?(k)
+          if hash[k].is_a?(Hash)
+              result[k] = {} unless result.key?(k)
+          else
+              result[k] = hash[k]
+          end
+      elsif hash.is_a?(Hash) and hash.key?(kn.first.to_sym)
+          keys_nested = []
+          keys.grep(/^#{kn.first}\./).each do |k2|
+            keys_nested << k2.to_s.gsub(/^#{kn.first}\./,'').to_sym
+          end
+          result[kn.first.to_sym] = nice_filter(hash[kn.first.to_sym], keys_nested)
+      elsif hash.is_a?(Array)
+          result = []
+          hash.each do |a|
+              res = nice_filter(a, keys)
+              result << res unless res.empty?
+          end
+      end
+    end
+    return result
   end
 end

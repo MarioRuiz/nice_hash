@@ -2,4 +2,9 @@
 --title 'nice_hash - NiceHash creates hashes following certain patterns so your testing will be much easier. You can easily generates all the hashes you want following the criteria you specify.'
 --charset utf-8
 --markup markdown
-'lib/**/*.rb' - '*.md' - 'LICENSE'
+-
+lib/**/*.rb 
+lib/nice_hash.rb
+lib/nice/hash/add_to_ruby.rb
+*.md
+LICENSE
