@@ -1,3 +1,4 @@
+require 'nice_hash'
 
 RSpec.describe NiceHash, "#set_values" do
   it "returns the hash with values set" do

@@ -1,3 +1,5 @@
+require 'nice_hash'
+
 RSpec.describe NiceHash, "#select_key" do
   it "returns the hash with selected keys" do
     new_hash = NiceHash.select_key(@hash, :wrong)

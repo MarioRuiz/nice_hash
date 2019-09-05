@@ -1,3 +1,5 @@
+require 'nice_hash'
+
 RSpec.describe NiceHash, "#pattern_fields" do
   it "returns the pattern fields" do
     res = NiceHash.pattern_fields(@hash)
