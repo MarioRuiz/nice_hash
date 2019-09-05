@@ -11,5 +11,6 @@ Gem::Specification.new do |s|
   s.license       = 'MIT'
   s.post_install_message = "Thanks for installing! Visit us on https://github.com/MarioRuiz/nice_hash"
   s.add_runtime_dependency 'string_pattern', '~> 2.2', '>= 2.2.1'
+  s.add_development_dependency 'rspec', '~> 3.8', '>= 3.8.0'
 end
 
