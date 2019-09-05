@@ -1,5 +1,3 @@
-require "nice_http"
-require "English"
 
 RSpec.describe NiceHash, "#set_values" do
   it "returns the hash with values set" do

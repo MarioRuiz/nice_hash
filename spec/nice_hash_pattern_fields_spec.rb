@@ -1,6 +1,3 @@
-require "nice_http"
-require "English"
-
 RSpec.describe NiceHash, "#pattern_fields" do
   it "returns the pattern fields" do
     res = NiceHash.pattern_fields(@hash)
