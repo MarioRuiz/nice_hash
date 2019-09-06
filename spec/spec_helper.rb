@@ -63,6 +63,58 @@ RSpec.configure do |config|
         },
       ],
     }
+    @hashopt = {
+      customer: Boolean,
+      created: DateTime,
+      name: :'10-20:L_',
+      [:pwd1, :pwd2, :pwd3] => :"5-10:L/n/",
+      age: 18..120,
+      euros: -3000.0..3000.0,
+      #wallet: 0..    #infinite only working Ruby >=2.6
+      reports: :"Weekely|Daily",
+      username: /[a-z]{10,20}/,
+    }
+
+    @my_hash = {
+      loginame: :"5-10:/xn/",
+      [:pwd1, :pwd2, :pwd3] => :"5-10:L/n/",
+      name: :"10-20:T_/x/",
+      age: 18..120,
+      euros: 0.0..3000.0,
+      created: DateTime,
+      customer: Boolean,
+      draws: [
+        {
+          drawId: :"5:N",
+          drawName: :"10:Ln",
+          type: :"Weekely|Daily",
+          owner: {
+            default: "admin",
+            correct: :"20:L",
+          },
+        },
+        {
+          drawId: :"5:N",
+          drawName: :"10:Ln",
+          type: :"Weekely|Daily",
+          owner: {
+            default: "admin",
+            correct: :"20:L",
+          },
+        },
+      ],
+      zip: { default: "00000", correct: :'5:N' },
+      address: "21 Doom Av",
+      city: {
+        default: "Madrid",
+        correct: "London|Rome",
+      },
+      wagers: ["34AAB", "dfffDD", "33499A"],
+      country: { default: "Spain", correct: ["Spain", "Iceland", "Serbia", "Denmark", "Canada", "Italy", "Austria"].join("|") }, #one of these values
+      mobilePhone: { default: "(987)654321", correct: ["(", :'3:N', ")", :'6-8:N'] },
+      sex: :"male|female|other", #any of these values
+      display: true,
+    }
   end
 
   # rspec-expectations config goes here. You can use an alternate

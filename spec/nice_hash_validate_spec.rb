@@ -54,4 +54,9 @@ RSpec.describe NiceHash, "#validate" do
     validation = @hash.validate(:correct, values_to_validate)
     expect(validation).to eq expected_result
   end
+
+  it "validates all posibilities" do
+    new_hash = @hashopt.generate
+    expect(@hashopt.validate(new_hash)).to eq ({})
+  end
 end
