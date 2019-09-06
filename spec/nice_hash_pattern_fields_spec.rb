@@ -10,6 +10,10 @@ RSpec.describe NiceHash, "#pattern_fields" do
           [:products, 1, :price, :correct]]
     expect(res).to eq (pf)
   end
+  it "returns the pattern fields when string and StringPattern.optimistic" do
+    res = NiceHash.pattern_fields({uno: '10:N', dos: '10', tres: :'10:N', 'cuatro'=> '10:N'})
+    expect(res).to eq ([[:uno], [:tres], ['cuatro']])
+  end
   it "returns the pattern fields when using class Hash" do
     res = @hash.pattern_fields
     pf = [[:address, :correct],
