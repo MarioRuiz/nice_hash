@@ -38,6 +38,9 @@ RSpec.describe NiceHash, "#get_values" do
     my_json_string = "{\"id\":344,\"customer\":{\"name\":\"Peter Smith\",\"phone\":334334333},\"tickets\":[{\"idt\":345,\"name\":\"myFavor1\"},{\"idt\":3123},{\"idt\":3145,\"name\":\"Special ticket\"}]}"
     expect(my_json_string.json(:idt)).to eq ([345, 3123, 3145])
     expect(my_json_string.json(:idt, :name)).to eq ({ :name => ["Peter Smith", ["myFavor1", "Special ticket"]], :idt => [345, 3123, 3145] })
+    #doesn't allow strings, only symbols
+    expect(my_json_string.json("idt")).to eq ({})
+    expect(my_json_string.json("idt", "name")).to eq ({})
   end
 
   it "is possible to use json method in json arrays of strings" do

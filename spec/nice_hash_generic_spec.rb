@@ -123,18 +123,18 @@ RSpec.describe NiceHash do
   it "returns random dates" do
     # random date from today to 60 days after
     date = Date.today.random(60)
-    expect(date <= Date.today + 60)
-    expect(date >= Date.today)
+    expect(date <= Date.today + 60).to eq true
+    expect(date >= Date.today).to eq true
 
     # random date from 01-09-2005 to 100 days later
     date = Date.strptime("01-09-2005", "%d-%m-%Y").random(100)
-    expect(date <= Date.new(2005, 9, 1) + 100)
-    expect(date >= Date.new(2005, 9, 1))
+    expect(date <= Date.new(2005, 9, 1) + 100).to eq true
+    expect(date >= Date.new(2005, 9, 1)).to eq true
 
     # random date from 2003/10/31 to today
     date = Date.new(2003, 10, 31).random(Date.today)
-    expect(date <= Date.today)
-    expect(date >= Date.new(2003, 10, 31))
+    expect(date <= Date.today).to eq true
+    expect(date >= Date.new(2003, 10, 31)).to eq true
   end
 
   it "deep copies of a hash" do
