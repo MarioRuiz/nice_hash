@@ -17,6 +17,30 @@ To generate the strings following a pattern take a look at the documentation for
 
 To use nice_hash on Http connections take a look at nice_http gem: https://github.com/MarioRuiz/nice_http
 
+## Table of contents
+- [Installation](#installation)
+- [Usage](#usage)
+  * [How to access the different keys](#how-to-access-the-different-keys)
+  * [Change all values on the keys we specified](#change-all-values-on-the-keys-we-specified)
+  * [Filtering / Selecting an specific key on the hash and subhashes](#filtering---selecting-an-specific-key-on-the-hash-and-subhashes)
+  * [How to generate the hash with the criteria we want](#how-to-generate-the-hash-with-the-criteria-we-want)
+  * [How to generate the hash with wrong values for the string patterns specified on the hash](#how-to-generate-the-hash-with-wrong-values-for-the-string-patterns-specified-on-the-hash)
+  * [Return the select_fields or the pattern_fields](#return-the-select-fields-or-the-pattern-fields)
+  * [dig and bury Hash methods](#dig-and-bury-hash-methods)
+  * [Validating hashes](#validating-hashes)
+  * [Change only one value at a time and return an Array of Hashes](#change-only-one-value-at-a-time-and-return-an-array-of-hashes)
+  * [Adding other values on run time when calling `generate` method](#adding-other-values-on-run-time-when-calling--generate--method)
+    + [Accessing other values of the hash on run time](#accessing-other-values-of-the-hash-on-run-time)
+  * [Compare the structure of a replica with the supplied structure](#compare-the-structure-of-a-replica-with-the-supplied-structure)
+  * [Other useful methods](#other-useful-methods)
+    + [Time stamp](#time-stamp)
+    + [Random dates](#random-dates)
+    + [Deep copy of a hash](#deep-copy-of-a-hash)
+    + [Nested deletion](#nested-deletion)
+    + [Boolean class](#boolean-class)
+- [Contributing](#contributing)
+- [License](#license)
+
 ## Installation
 
 Add this line to your application's Gemfile:
@@ -655,9 +679,9 @@ array_of_hashes.each {|hash_with_one_wrong_field|
 
 Take a look at a full example: https://gist.github.com/MarioRuiz/824d7a462b62fd85f02c1a09455deefb
 
-### Adding other values on real time when calling `generate` method
+### Adding other values on run time when calling `generate` method
 
-If you need a value to be supplied for your key on real time every time you call the `generate` method you can use `lambda`
+If you need a value to be supplied for your key on run time every time you call the `generate` method you can use `lambda`
 
 ```ruby
     my_hash = {
@@ -688,9 +712,9 @@ This is the output:
  :other=>"2019-01-02T13:41:05.536"}
 ```
 
-#### Accessing other values of the hash on real time
+#### Accessing other values of the hash on run time
 
-If you need for example to access another value of the key to generate a value on real time you can use `NiceHash.values`
+If you need for example to access another value of the key to generate a value on run time you can use `NiceHash.values`
 
 Take a look at this example:
 
@@ -786,6 +810,7 @@ Valid patterns:
 
 ### Other useful methods
 
+#### Time stamp
 In case you need the time stamp, we added the method `stamp` to the `Time` class
 
 ```ruby
@@ -793,6 +818,7 @@ In case you need the time stamp, we added the method `stamp` to the `Time` class
     #> 2019-01-02T11:03:23.620Z
 ```
 
+#### Random dates
 In class `Date` we added a very handy `random` method you can use to generate random dates.
 
 ```ruby
@@ -806,6 +832,7 @@ In class `Date` we added a very handy `random` method you can use to generate ra
     puts Date.new(2003,10,31).random(Date.today) 
 ```
 
+#### Deep copy of a hash
 If you need a clean copy of a hash use the method `deep_copy`
 
 ```ruby
@@ -826,6 +853,7 @@ p my_hash
 #>{:one=>1, :two=>2, :three=>{:car=>"changed"}}
 ```
 
+#### Nested deletion
 If you want to delete a key on a nested hash you can use `delete_nested` and supply the key you want:
 
 ```ruby
@@ -844,6 +872,7 @@ If you want to delete a key on a nested hash you can use `delete_nested` and sup
 
 ```
 
+#### Boolean class
 We added the possibility to check if a value is boolean or not since in Ruby doesn't exist, just TrueClass and FalseClass
 
 ```ruby

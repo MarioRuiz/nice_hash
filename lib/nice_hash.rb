@@ -778,7 +778,7 @@ class NiceHash
   # output:
   #   a Hash of Arrays with all values found.
   #       Example of output with example.get_values("id","name")
-  #           {"id"=>[334],"name"=>["Peter North"]}
+  #           {"id"=>344, "name"=>["Peter Smith", ["myFavor1", "Special ticket"]]}
   #       Example of output with example.get_values("idt")
   #           {"idt"=>[345,3123,3145]}
   #       Example of output with example.get_values(:'tickets.idt')
@@ -786,6 +786,8 @@ class NiceHash
   #
   ####################################################
   def NiceHash.get_values(hashv, keys)
+    #todo: check if we should return {"id"=>344, "name"=>["Peter Smith", "myFavor1", "Special ticket"]} instead of
+    # {"id"=>344, "name"=>["Peter Smith", ["myFavor1", "Special ticket"]]}
     if keys.kind_of?(String) or keys.kind_of?(Symbol)
       keys = [keys]
     end
@@ -991,7 +993,7 @@ class NiceHash
       hash.each do |k, v|
         if v.is_a?(Hash)
           keys << k
-          keys << trans(v)
+          keys << transtring(v)
         else
           keys << k
           keys << v
@@ -1011,7 +1013,7 @@ class NiceHash
   #  @return [Array]
   #
   #  @example
-  #    my_hash =  { uno: {dos: :tres} }
+  #    my_hash =  { uno: {dos: {tres: 3}} }
   #    NiceHash.get_all_keys(my_hash)
   #    #>[:uno, :dos, :tres]
   ##################################################
@@ -1028,7 +1030,7 @@ class NiceHash
   end
 
   ##################################################
-  #  Deletes the supplied key
+  #  Deletes the supplied nested key
   #
   #  @param hash [Hash] The hash we want
   #  @param nested_key [Hash] [String] String with the nested key: 'uno.dos.tres' or a hash { uno: {dos: :tres} }

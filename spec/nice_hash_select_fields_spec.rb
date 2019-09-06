@@ -1,4 +1,4 @@
-require 'nice_hash'
+require "nice_hash"
 
 RSpec.describe NiceHash, "#select_fields" do
   it "returns the select fields" do

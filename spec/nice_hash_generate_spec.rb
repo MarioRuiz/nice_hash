@@ -1,4 +1,4 @@
-require 'nice_hash'
+require "nice_hash"
 
 RSpec.describe NiceHash, "#generate" do
   it "returns the hash with generated values" do
@@ -17,4 +17,11 @@ RSpec.describe NiceHash, "#generate" do
     expect(@hash.products[1].price.correct.validate(new_hash.products[1].price))
   end
 
+  it "returns the hash with generated wrong min_length values " do
+    new_hash = NiceHash.generate(@hash, :correct, expected_errors: [:min_length])
+    expect(@hash.address.correct.validate(new_hash.address, errors: [:min_length]))
+    expect(!@hash.city.correct.to_s.split("|").include?(new_hash.city))
+    expect(@hash.products[0].price.correct.validate(new_hash.products[0].price, errors: [:min_length]))
+    expect(@hash.products[1].price.correct.validate(new_hash.products[1].price, errors: [:min_length]))
+  end
 end

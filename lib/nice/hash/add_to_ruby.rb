@@ -252,7 +252,7 @@ class Hash
   # More info: NiceHash.get_values
   ###########################################################################
   def get_values(*keys)
-    NiceHash.get_values(self, *keys)
+    NiceHash.get_values(self, keys.flatten)
   end
 
   ###########################################################################

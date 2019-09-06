@@ -1,4 +1,4 @@
-require 'nice_hash'
+require "nice_hash"
 
 RSpec.describe NiceHash, "#pattern_fields" do
   it "returns the pattern fields" do
