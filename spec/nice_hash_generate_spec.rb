@@ -25,7 +25,7 @@ RSpec.describe NiceHash, "#generate" do
     expect(@hash.products[1].price.correct.validate(new_hash.products[1].price))
   end
 
-  it "returns the hash with generated wrong min_length values " do
+  it "returns the hash with generated wrong min_length values - nested " do
     new_hash = NiceHash.generate(@hash, :correct, expected_errors: [:min_length])
     expect(@hash.address.correct.validate(new_hash.address, errors: [:min_length]))
     expect(!@hash.city.correct.to_s.split("|").include?(new_hash.city))
@@ -33,44 +33,66 @@ RSpec.describe NiceHash, "#generate" do
     expect(@hash.products[1].price.correct.validate(new_hash.products[1].price, errors: [:min_length]))
   end
 
-
-  it "returns the hash with generated wrong max_length values " do
+  it "returns the hash with generated wrong min_length values " do
     hash = NiceHash.generate(@hashopt, expected_errors: [:max_length])
-    expect(hash.created.size>24)
-    expect(hash.name.size>20)
-    expect(hash.pwd1.size>10)
-    expect(hash.age>120)
-    expect(hash.euros>3000)
-    expect(hash.reports.size>7)
-    expect(hash.username.size>20)
+    expect(hash.created.size < 24)
+    expect(hash.name.size < 10)
+    expect(hash.pwd1.size < 5)
+    expect(hash.age < 18)
+    expect(hash.euros < -3000)
+    expect(hash.reports.size < 5)
+    expect(hash.username.size < 10)
+  end
+
+  it "returns the hash with generated wrong max_length values" do
+    hash = NiceHash.generate(@hashopt, expected_errors: [:max_length])
+    expect(hash.created.size > 24)
+    expect(hash.name.size > 20)
+    expect(hash.pwd1.size > 10)
+    expect(hash.age > 120)
+    expect(hash.euros > 3000)
+    expect(hash.reports.size > 7)
+    expect(hash.username.size > 20)
+  end
+
+  it "returns the hash with generated wrong length values" do
+    hash = NiceHash.generate(@hashopt, expected_errors: [:max_length])
+    expect(hash.created.size != 24)
+    expect(hash.name.size).not_to be_between(10, 20)
+    expect(hash.pwd1.size).not_to be_between(5, 10)
+    expect(hash.age).not_to be_between(18, 120)
+    expect(hash.euros).not_to be_between(-3000, 3000)
+    expect(hash.reports.size).not_to eq 5
+    expect(hash.reports.size).not_to eq 7
+    expect(hash.username.size).not_to be_between(10, 20)
   end
 
   it "returns the hash with generated wrong value" do
     hash = NiceHash.generate(@hashopt, expected_errors: [:value])
-    expect(hash.customer.to_s!='true')
-    expect(hash.customer.to_s!='false')
+    expect(hash.customer.to_s != "true")
+    expect(hash.customer.to_s != "false")
     expect(hash.created).not_to match(/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{3}Z$/)
     expect(hash.name).not_to match(/^[a-zA-Z\s]{10,20}$/)
     expect(hash.pwd1).not_to match(/^([a-zA-Z]?\d){5,10}$/)
     expect(hash.age).not_to match(/^\d+$/)
     expect(hash.euros).not_to match(/^\d+$/)
-    expect(hash.reports.to_s!='Weekely')
-    expect(hash.reports.to_s!='Daily')
+    expect(hash.reports.to_s != "Weekely")
+    expect(hash.reports.to_s != "Daily")
     expect(hash.username).not_to match(/^[a-z]{10,20}$/)
   end
 
   it "returns the hash with generated wrong value and string_set_not_allowed" do
     hash = NiceHash.generate(@hashopt, expected_errors: [:string_set_not_allowed])
-    expect(hash.customer.to_s!='true')
-    expect(hash.customer.to_s!='false')
+    expect(hash.customer.to_s != "true")
+    expect(hash.customer.to_s != "false")
     #todo: when DateTime is returning a valid date, verify if that's as expected
     #expect(hash.created).not_to match(/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{3}Z$/)
     expect(hash.name).not_to match(/^[a-zA-Z\s]{10,20}$/)
     expect(hash.pwd1).not_to match(/^([a-zA-Z]?\d){5,10}$/)
     expect(hash.age).not_to match(/^\d+$/)
     expect(hash.euros).not_to match(/^\d+$/)
-    expect(hash.reports.to_s!='Weekely')
-    expect(hash.reports.to_s!='Daily')
+    expect(hash.reports.to_s != "Weekely")
+    expect(hash.reports.to_s != "Daily")
     expect(hash.username).not_to match(/^[a-z]{10,20}$/)
   end
 
@@ -113,7 +135,7 @@ RSpec.describe NiceHash, "#generate" do
       },
     }
     expect(my_hash.gen.email).not_to eq ""
-    my_hash.send_email = 'false'
+    my_hash.send_email = "false"
     expect(my_hash.gen.email).to eq ""
   end
 end

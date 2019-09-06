@@ -69,17 +69,17 @@ RSpec.describe NiceHash do
 
   it "filters the array supplied and returns only the specified keys" do
     my_hash = [{ user: {
-                        address: {
-                          city: "Madrid",
-                          country: "Spain",
-                        },
-                        name: "Peter",
-                        age: 33,
-                        customers: [{ name: "Peter", currency: "Euro" }, { name: "John", currency: "Euro" }],
-                      },
-                customer: true }]
+      address: {
+        city: "Madrid",
+        country: "Spain",
+      },
+      name: "Peter",
+      age: 33,
+      customers: [{ name: "Peter", currency: "Euro" }, { name: "John", currency: "Euro" }],
+    },
+                 customer: true }]
     expected_result = [{ :user => { :address => { :city => "Madrid" }, :customers => [{ :name => "Peter" }, { :name => "John" }] }, :customer => true }]
-    expect(NiceHash.nice_filter(my_hash, [:'user.address.city', :'customer', :'user.customers.name'])).to eq (expected_result)
+    expect(my_hash.nice_filter([:'user.address.city', :'customer', :'user.customers.name'])).to eq (expected_result)
   end
 
   it "is possible to access keys all the different manners" do
@@ -112,7 +112,7 @@ RSpec.describe NiceHash do
 
   it "buries the value in arrays" do
     default_values = [@my_hash.generate(:default)]
-    default_values.bury([0,:draws, 0, :drawName], "FirstDraw")
+    default_values.bury([0, :draws, 0, :drawName], "FirstDraw")
     expect(default_values[0].draws[0].drawName).to eq "FirstDraw"
   end
 
@@ -160,17 +160,16 @@ RSpec.describe NiceHash do
     expect(value.is_a?(Boolean)).to eq true
     expect(text.is_a?(Boolean)).to eq false
   end
-  it 'compares integer with string' do
-    expect('10'==10).to eq true
+  it "compares integer with string" do
+    expect("10" == 10).to eq true
   end
 
-  it 'deep symbolize keys on hashes' do
-    my_hash = {'uno'=>{'dos'=>{'tres'=>3}}}
-    expect(my_hash.deep_symbolize_keys).to eq ({:'uno'=>{:'dos'=>{:'tres'=>3}}})
+  it "deep symbolize keys on hashes" do
+    my_hash = { "uno" => { "dos" => { "tres" => 3 } } }
+    expect(my_hash.deep_symbolize_keys).to eq ({ :'uno' => { :'dos' => { :'tres' => 3 } } })
   end
-  it 'deep symbolize keys on arrays' do
-    my_hash = [{'uno'=>{'dos'=>{'tres'=>3}}}]
-    expect(my_hash.deep_symbolize_keys).to eq ([{:'uno'=>{:'dos'=>{:'tres'=>3}}}])
+  it "deep symbolize keys on arrays" do
+    my_hash = [{ "uno" => { "dos" => { "tres" => 3 } } }]
+    expect(my_hash.deep_symbolize_keys).to eq ([{ :'uno' => { :'dos' => { :'tres' => 3 } } }])
   end
-
 end

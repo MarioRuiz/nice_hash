@@ -7,8 +7,8 @@ RSpec.describe NiceHash, "#select_fields" do
     expect(res).to eq (pf)
   end
   it "returns the select fields when string and StringPattern.optimistic" do
-    res = NiceHash.select_fields({uno: 'blue|red', dos: '10', tres: :'blue|red', 'cuatro'=> 'blue|red'})
-    expect(res).to eq ([[:uno], [:tres], ['cuatro']])
+    res = NiceHash.select_fields({ uno: "blue|red", dos: "10", tres: :'blue|red', "cuatro" => "blue|red" })
+    expect(res).to eq ([[:uno], [:tres], ["cuatro"]])
   end
 
   it "returns the select fields when using class Hash" do

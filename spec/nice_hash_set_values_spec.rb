@@ -55,9 +55,9 @@ RSpec.describe NiceHash, "#set_values" do
     expect(hash2.data.lab.products[0].price).to eq 75
     expect(hash2.data.lab.products[1].price).to eq 75
   end
-  it 'returns the object if no hash or empty array or hash' do
-    expect(NiceHash.set_values({},{price: 75})).to eq ({})
-    expect(NiceHash.set_values([],{price: 75})).to eq ([])
-    expect(NiceHash.set_values('uno',{price: 75})).to eq ('uno')
+  it "returns the object if no hash or empty array or hash" do
+    expect(NiceHash.set_values({}, { price: 75 })).to eq ({})
+    expect(NiceHash.set_values([], { price: 75 })).to eq ([])
+    expect(NiceHash.set_values("uno", { price: 75 })).to eq ("uno")
   end
 end
