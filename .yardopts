@@ -5,6 +5,6 @@
 -
 lib/**/*.rb 
 lib/nice_hash.rb
-lib/nice/hash/add_to_ruby.rb
+lib/nice/hash/*.rb
 *.md
 LICENSE
