@@ -37,6 +37,34 @@ RSpec.describe NiceHash do
     expect(NiceHash.set_nested(my_hash, "user.address.city", "Barcelona")).to eq ({ :user => { :address => { :city => "Barcelona", :country => "Spain" }, :name => "Peter", :age => 33 }, :customer => true })
   end
 
+  it "sets the supplied value on the supplied key when no nested but using set_nested" do
+    my_hash = { user: {
+                        address: {
+                          city: "Madrid",
+                          country: "Spain",
+                        },
+                        name: "Peter",
+                        age: 33,
+                      },
+                customer: true }
+    expect(NiceHash.set_nested(my_hash, "customer", false)).to eq ({ :user => { :address => { :city => "Madrid", :country => "Spain" }, :name => "Peter", :age => 33 }, :customer => false })
+  end
+
+  it "sets the supplied value on the supplied nested key only if exists" do
+    my_hash = { user: {
+                        address: {
+                          city: "Madrid",
+                          country: "Spain",
+                        },
+                        name: "Peter",
+                        age: 33,
+                      },
+                customer: true }
+    expect(NiceHash.set_nested(my_hash, "user.address.city", "Barcelona", true)).to eq ({ :user => { :address => { :city => "Barcelona", :country => "Spain" }, :name => "Peter", :age => 33 }, :customer => true })
+    expect(NiceHash.set_nested(my_hash, "user.address.cityx", "Reykjavik", true)).to eq ({ :user => { :address => { :city => "Barcelona", :country => "Spain" }, :name => "Peter", :age => 33 }, :customer => true })
+    expect(NiceHash.set_nested(my_hash, "user.age", 55, true)).to eq ({ :user => { :address => { :city => "Barcelona", :country => "Spain" }, :name => "Peter", :age => 55 }, :customer => true })
+  end
+
   it "filters the hash supplied and returns only the specified keys" do
     my_hash = { user: {
                         address: {

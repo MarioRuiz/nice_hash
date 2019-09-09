@@ -1,5 +1,5 @@
 SP_ADD_TO_RUBY = true if !defined?(SP_ADD_TO_RUBY)
-#todo: add SP_USE_NESTED_KEYS = true
+#todo: consider adding SP_USE_NESTED_KEYS = true
 
 require_relative "nice/hash/add_to_ruby" if SP_ADD_TO_RUBY
 require_relative "nice/hash/change_one_by_one"

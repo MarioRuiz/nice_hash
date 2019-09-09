@@ -60,4 +60,11 @@ RSpec.describe NiceHash, "#set_values" do
     expect(NiceHash.set_values([], { price: 75 })).to eq ([])
     expect(NiceHash.set_values("uno", { price: 75 })).to eq ("uno")
   end
+  
+  it "sets the values for the case of same_values" do
+    hash = {[:pwd1, :pwd2]=>:'1-10:Ln'}
+    expect(hash.set_values({pwd1: 'aaaa', pwd2: 'bbbbb'})).to eq ({[:pwd1, :pwd2]=>"bbbbb"})
+    expect(hash.set_values({[:pwd1, :pwd2]=>:'1-10:N'})).to eq ({[:pwd1, :pwd2]=>:"1-10:N"})
+  end
+
 end

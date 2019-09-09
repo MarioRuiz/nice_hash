@@ -60,4 +60,52 @@ RSpec.describe NiceHash, "#validate" do
     expect(@hashopt.validate(new_hash)).to eq ({})
     expect(NiceHash.validate(@hashopt, new_hash)).to eq ({})
   end
+
+  it 'validates using option same values' do
+    hash = {[:pwd1, :pwd2]=>:'1-10:Ln'}
+    expect(hash.validate({pwd1:'A', pwd2:'A'})).to eq ({})
+  end
+  it 'validates using option same values and not equal' do
+    hash = {[:pwd1, :pwd2]=>:'1-10:Ln'}
+    expect(hash.validate({pwd1:'A', pwd2:'V'})).to eq ({:pwd2=>"Not equal to pwd1"})
+  end
+  it 'validates Range wrong class' do
+    hash = {age: 10..20}
+    expect(hash.validate({age: 'A'})).to eq ({age: false})
+  end
+  it 'validates Range wrong value' do
+    hash = {age: 10..20}
+    expect(hash.validate({age: 50})).to eq ({age: false})
+  end
+  it 'validates DateTime with Date, Time or DateTime' do
+    hash = {age: DateTime}
+    expect(hash.validate({age: Date.new})).to eq ({})
+    expect(hash.validate({age: DateTime.new})).to eq ({})
+    expect(hash.validate({age: Time.new})).to eq ({})
+  end
+  it 'validates DateTime wrong value' do
+    hash = {age: DateTime}
+    expect(hash.validate({age: "aa"})).to eq ({age: false})
+  end
+  it 'validates Regexp wrong value' do
+    hash = {age: /[\d]+/}
+    expect(hash.validate({age: "aa"})).to eq ({age: false})
+  end
+  it 'validates Array of patterns' do
+    hash = {age: ['1','2:N']}
+    expect(hash.validate({age: "123"})).to eq ({})
+  end
+  it 'validates Array of patterns wrong value' do
+    hash = {age: ['1','2:N']}
+    expect(hash.validate({age: "12a"})).to eq ({age: false})
+  end
+  it 'validates Array' do
+    hash = {age: ['1','2']}
+    expect(hash.validate({age: ['1','2']})).to eq ({})
+  end
+  it 'validates Array wrong value' do
+    hash = {age: [DateTime]}
+    expect(hash.validate({age: [Date.new,'22']})).to eq ({:age=>[nil, {:age=>false}]})
+  end
+
 end

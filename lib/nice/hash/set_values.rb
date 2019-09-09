@@ -18,37 +18,67 @@ class NiceHash
   def NiceHash.set_values(hash_array, hash_values)
     hashv = Hash.new()
     if hash_array.is_a?(Hash) and hash_array.size > 0
+      #for the case same_values on hash_values
+      #fex: ({pwd1: 'aaaa', pwd2: 'bbbbb', uno: 1}).set_values({[:pwd1, :pwd2]=>:'1-10:n'})
+      # should return : {[:pwd1, :pwd2]=>:'1-10:n', uno: 1}
+      #todo: it doesn't work for all cases, just simple one
+      if hash_values.is_a?(Hash) and hash_values.keys.flatten.size != hash_values.keys.size
+        hash_values.each do |k,v|
+          if k.is_a?(Array)
+            k.each do |kvk|
+              if hash_array.key?(kvk)
+                  hash_array[kvk] = hash_values[k]
+              end
+            end
+          end
+        end
+
+      end
       hash_array.each do |k, v|
-        if hash_values.keys.include?(k)
-          hashv[k] = hash_values[k]
-        elsif v.is_a?(Array)
-          if hash_values.has_rkey?('\.') # the kind of 'uno.dos.tres'
-            new_hash_values = {}
-            hash_values.each do |kk,vv|
-              if kk.to_s.match?(/^#{k}\./)
-                kk = kk.to_s.gsub(/^#{k}\./, '').to_sym
-                new_hash_values[kk] = vv
-              end
+        #for the case of using same_values: [:pwd1, :pwd2] => :'10:N' and supply hash_values: pwd1: 'a', pwd2: 'b'
+        #instead of [:pwd1,:pwd2]=>'a'
+        same_values_key_done = false
+        if k.is_a?(Array) 
+          #todo: we are treating here only a simple case, consider to add also nested keys, array of values...
+          k.each do |kvk|
+            if hash_values.keys.include?(kvk)
+              hashv[k] = hash_values[kvk]
+              same_values_key_done = true
             end
-            hashv[k] = NiceHash.set_values(v, new_hash_values)
-          else
-            hashv[k] = NiceHash.set_values(v, hash_values)
           end
-        elsif v.is_a?(Hash)
-          if hash_values.has_rkey?('\.') # the kind of 'uno.dos.tres'
-            new_hash_values = {}
-            hash_values.each do |kk,vv|
-              if kk.to_s.match?(/^#{k}\./)
-                kk = kk.to_s.gsub(/^#{k}\./, '').to_sym
-                new_hash_values[kk] = vv
+        end
+        unless same_values_key_done
+          if hash_values.keys.include?(k)
+            hashv[k] = hash_values[k]
+          elsif v.is_a?(Array)
+            if hash_values.has_rkey?('\.') # the kind of 'uno.dos.tres'
+              new_hash_values = {}
+              hash_values.each do |kk,vv|
+                if kk.to_s.match?(/^#{k}\./)
+                  kk = kk.to_s.gsub(/^#{k}\./, '').to_sym
+                  new_hash_values[kk] = vv
+                end
               end
+              hashv[k] = NiceHash.set_values(v, new_hash_values)
+            else
+              hashv[k] = NiceHash.set_values(v, hash_values)
             end
-            hashv[k] = NiceHash.set_values(v, new_hash_values)
+          elsif v.is_a?(Hash)
+            if hash_values.has_rkey?('\.') # the kind of 'uno.dos.tres'
+              new_hash_values = {}
+              hash_values.each do |kk,vv|
+                if kk.to_s.match?(/^#{k}\./)
+                  kk = kk.to_s.gsub(/^#{k}\./, '').to_sym
+                  new_hash_values[kk] = vv
+                end
+              end
+              hashv[k] = NiceHash.set_values(v, new_hash_values)
+            else
+              hashv[k] = NiceHash.set_values(v, hash_values)
+            end
           else
-            hashv[k] = NiceHash.set_values(v, hash_values)
+            hashv[k] = v
           end
-        else
-          hashv[k] = v
         end
       end
       hash_values.each do |k, v|

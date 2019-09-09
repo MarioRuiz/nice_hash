@@ -58,7 +58,8 @@ class NiceHash
       return { error: :error }
     end
     values = values_hash_to_validate
-    if pattern_hash.keys.size == get_all_keys(pattern_hash).size and values.keys.size != get_all_keys(values)
+    if pattern_hash.keys.size == get_all_keys(pattern_hash).size and values.keys.size != get_all_keys(values) and
+      pattern_hash.keys.size == pattern_hash.keys.flatten.size # dont't set_values for the case of same_value 
       # all patterns on patterns_hash are described on first level, so no same structure than values
       pattern_hash = values.set_values(pattern_hash)
     end
@@ -175,7 +176,6 @@ class NiceHash
               results[key] = false unless value == values[key]
             end
           end
-
           if same_values.include?(key)
             same_values[key].each { |k|
               if values.keys.include?(k)
