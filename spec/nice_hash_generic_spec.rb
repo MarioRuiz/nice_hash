@@ -200,4 +200,21 @@ RSpec.describe NiceHash do
     my_hash = [{ "uno" => { "dos" => { "tres" => 3 } } }]
     expect(my_hash.deep_symbolize_keys).to eq ([{ :'uno' => { :'dos' => { :'tres' => 3 } } }])
   end
+  it 'access the string keys as methods' do
+    hash = {'uno'=> 1, dos: 2, 'tres': 3}
+    expect(hash._tres).to eq 3
+    expect(hash.tres).to eq 3
+    expect(hash.dos).to eq 2
+    expect(hash.uno).to eq 1
+    hash.uno = 11
+    expect(hash.uno).to eq 11
+    hash._uno = 111
+    expect(hash.uno).to eq 111
+    hash.dos = 22
+    expect(hash.dos).to eq 22
+    hash._dos = 222
+    expect(hash.dos).to eq 222
+    expect(hash).to eq({"uno"=>111, :dos=>222, :tres=>3})
+  end
+
 end

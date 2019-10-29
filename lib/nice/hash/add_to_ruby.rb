@@ -159,8 +159,14 @@ class Hash
     m = m[1..-1].to_sym if m[0] == "_"
     if key?(m)
       self[m]
+    elsif key?(m.to_s)
+      self[m.to_s]
     elsif m.to_s[-1] == "="
-      self[m.to_s.chop.to_sym] = arguments[0]
+      if key?(m.to_s.chop)
+        self[m.to_s.chop] = arguments[0]
+      else
+        self[m.to_s.chop.to_sym] = arguments[0]
+      end
     else
       nil
     end
