@@ -38,6 +38,8 @@ To use nice_hash on Http connections take a look at nice_http gem: https://githu
     + [Deep copy of a hash](#deep-copy-of-a-hash)
     + [Nested deletion](#nested-deletion)
     + [Boolean class](#boolean-class)
+  * [Other tools integration](#other-tools-integration)
+    + [Tabulo](#tabulo)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -882,6 +884,35 @@ text = 'true'
 value.is_a?(Boolean) #> true
 text.is_a?(Boolean) #> false
 
+```
+### Other tools integration
+
+#### Tabulo
+
+You can use tabulo (https://github.com/matt-harvey/tabulo) and nice_hash together:
+
+```ruby
+require 'nice_hash'
+require 'tabulo'
+
+my_data = [
+  {id:'1', name: 'Peter', city: 'London', account: '112124', client: true },
+  {id:'2', name: 'Ann', city: 'Madrid', account: '4454656', client: true },
+  {id:'3', name: 'John', city: 'New York', account: '5645666', client: false }
+]
+
+puts Tabulo::Table.new(my_data, :id, :name, :city, :client, border: :modern).pack
+```
+
+It will generate:
+```
+┌────┬───────┬──────────┬────────┐
+│ id │  name │   city   │ client │
+├────┼───────┼──────────┼────────┤
+│ 1  │ Peter │ London   │  true  │
+│ 2  │ Ann   │ Madrid   │  true  │
+│ 3  │ John  │ New York │  false │
+└────┴───────┴──────────┴────────┘
 ```
 
 ## Contributing
