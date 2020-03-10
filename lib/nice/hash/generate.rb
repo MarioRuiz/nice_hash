@@ -134,16 +134,25 @@ class NiceHash
           end
         elsif value.kind_of?(Range)
           if expected_errors.empty?
+            if value.size == Float::INFINITY
+              value = (value.min..2**64)
+            end
             hashv[key] = rand(value)
           else
-            hashv[key] = rand(value)
+            if value.size == Float::INFINITY
+              infinite = true
+              value = (value.min..2**64)
+            else
+              infinite = false
+              hashv[key] = rand(value)
+            end
             expected_errors.each do |er|
               if er == :min_length
                 hashv[key] = rand((value.first - value.last)..value.first - 1)
-              elsif er == :max_length
+              elsif er == :max_length and !infinite
                 hashv[key] = rand((value.last + 1)..(value.last * 2))
               elsif er == :length
-                if rand.round == 1
+                if rand.round == 1 or infinite
                   hashv[key] = rand((value.first - value.last)..value.first - 1)
                 else
                   hashv[key] = rand((value.last + 1)..(value.last * 2))
