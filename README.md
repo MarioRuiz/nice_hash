@@ -814,6 +814,8 @@ The last parameter (patterns) allow you to add verification of data values follo
 Valid patterns:
 - a regular expression
 - any string_pattern, more info: string_pattern project: https://github.com/MarioRuiz/string_pattern
+- array of a string_pattern: 
+  - [ :'10-20:L' ]
 - Boolean: specifying Boolean will check if the value is TrueClass or FalseClass
 - ranges: Any kind of numeric ranges, for example: 
   - 10..400

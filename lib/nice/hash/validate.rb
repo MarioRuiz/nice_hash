@@ -93,10 +93,18 @@ class NiceHash
               results[key] = false unless value.to_s == values[key].to_s
             end
           elsif value.kind_of?(Range)
-            if values[key].class != value.first.class or values[key].class != value.last.class
-              results[key] = false
-            elsif values[key] < value.first or values[key] > value.last
-              results[key] = false
+            if value.size.to_s == 'Infinity'
+              if values[key].class != value.first.class
+                results[key] = false
+              elsif values[key] < value.first
+                results[key] = false
+              end
+            else
+              if values[key].class != value.first.class or values[key].class != value.last.class
+                results[key] = false
+              elsif values[key] < value.first or values[key] > value.last
+                results[key] = false
+              end
             end
           elsif value.kind_of?(Class) and value == DateTime
             if values[key].is_a?(String) and values[key].size == 24
