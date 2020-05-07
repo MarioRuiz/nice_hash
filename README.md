@@ -116,7 +116,8 @@ my_hash={
     country: {default: 'Spain', correct: ["Spain", "Iceland", "Serbia", "Denmark", "Canada", "Italy", "Austria"].join("|")}, #one of these values
     mobilePhone: {default: '(987)654321', correct: ['(', :'3:N', ')', :'6-8:N']},
     sex: :"male|female|other", #any of these values
-    display: true
+    display: true,
+    user_names: [ :'3-10:L' ]
 }
 ```
 
@@ -138,6 +139,7 @@ Explanations of the different fields:
     country: correct: one of these values "Spain", "Iceland", "Serbia", "Denmark", "Canada", "Italy", "Austria"
     mobilePhone: correct: a sting pattern with one of the next: "(nnn) nnnnnn", "(nnn) nnnnnnn", "(nnn) nnnnnnnn"
     sex: 'male' or 'female' or 'other'
+    user_names: array of strings from 3 to 10 letters
 
 So in case you want to assign to a key a string pattern value like for example in loginame, you need to specify the string pattern as a symbol :"5-10:/xn/"
 
@@ -303,7 +305,8 @@ On this example new_hash will contain:
     country: ["Spain", "Iceland", "Serbia", "Denmark", "Canada", "Italy", "Austria"].join("|"), #one of these values
     mobilePhone: ['(', :'3:N', ')', :'6-8:N'],
     sex: :"male|female|other", #any of these values
-    display: true
+    display: true,
+    user_names: [ :'3-10:L' ]
 }
 ```
 
@@ -383,7 +386,9 @@ In case of filtering by :correct new_hash would have a value like this for examp
  :country=>"Denmark",
  :mobilePhone=>"(707)8782080",
  :sex=>"male",
- :display=>true}
+ :display=>true,
+ :user_names=>["FFrriNdw", "ACc"]
+}
 ```
 
 In case no filtering you will get all the values for all keys
@@ -438,7 +443,9 @@ On this example wrong_min_length will contain something like:
  :country=>"Spai",
  :mobilePhone=>"(237)17640431",
  :sex=>"mal",
- :display=>true}
+ :display=>true,
+ :user_names=>["FF"]
+ }
 ```
 
 ### Return the select_fields or the pattern_fields
@@ -488,7 +495,8 @@ all_pattern_fields contains:
  [:draws, 1, :drawName],
  [:draws, 1, :owner, :correct],
  [:zip, :correct],
- [:mobilePhone, :correct]]
+ [:mobilePhone, :correct]],
+ [:user_names]
 ```
 
 pattern_fields_on_correct contains: 
@@ -504,7 +512,8 @@ pattern_fields_on_correct contains:
  [:draws, 1, :drawName],
  [:draws, 1, :owner],
  [:zip],
- [:mobilePhone]]
+ [:mobilePhone]],
+ [:user_names]
 ```
 
 
@@ -582,7 +591,9 @@ After using the bury method default_values will contain:
  :country=>"Spain",
  :mobilePhone=>"(987)654321",
  :sex=>"male",
- :display=>true}
+ :display=>true,
+ :user_names=>["FFrriNdw", "ACc"]
+ }
 ```
 
 ### Validating hashes
@@ -620,7 +631,9 @@ values = {
  :country=>"Iceland",
  :mobilePhone=>"(441)97037845",
  :sex=>"male",
- :display=>true}
+ :display=>true,
+ :user_names=>['ddfdsa']
+ }
 ```
 
 To validate those values against the patterns defined on my_hash:

@@ -118,8 +118,19 @@ class NiceHash
             complex_data = false
             value.each { |v|
               if (v.kind_of?(String) or v.kind_of?(Symbol)) and StringPattern.analyze(v, silent: true).kind_of?(StringPattern::Pattern)
-                res = StringPattern.validate(pattern: value, text: values[key])
-                results[key] = res if res == false
+                if value.is_a?(Array) and value.size == 1 and values[key].is_a?(Array)
+                  results[key] ||= []
+                  values[key].each do |vk|
+                    res = StringPattern.validate(pattern: value[0], text: vk)
+                    results[key] << res
+                  end
+                  if results[key].flatten.size == 0
+                    results.delete(key) 
+                  end
+                else
+                  res = StringPattern.validate(pattern: value, text: values[key])
+                  results[key] = res if res == false
+                end
                 array_pattern = true
                 break
               elsif v.kind_of?(Hash) or v.kind_of?(Array) or v.kind_of?(Struct)

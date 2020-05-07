@@ -107,5 +107,26 @@ RSpec.describe NiceHash, "#validate" do
     hash = {age: [DateTime]}
     expect(hash.validate({age: [Date.new,'22']})).to eq ({:age=>[nil, {:age=>false}]})
   end
+  it 'validates Array of Dates' do
+    hash = {age: [DateTime]}
+    expect(hash.validate({age: [Date.new, Date.new, Date.new]})).to eq ({})
+  end
+  it 'validates Array of Booleans' do
+    hash = {age: [Boolean]}
+    expect(hash.validate({age: [true, false, true]})).to eq ({})
+  end
+  it 'validates Array of Booleans wrong value' do
+    hash = {age: [Boolean]}
+    expect(hash.validate({age: [true, 'aa', true]})).to eq ({:age=>[nil, {:age=>false}]})
+  end
+  it 'validates Array of a pattern' do
+    hash = { ages: [ :'1-99:N' ] }
+    expect(hash.validate({age: ['1','2']})).to eq ({})
+  end
+
+  it 'validates Array of a pattern wrong value' do
+    hash = { ages: [ :'1-99:N' ] }
+    expect(hash.validate({ages: ['1','2a']})).to eq ({:ages => [[], [:value, :string_set_not_allowed]]})
+  end
 
 end

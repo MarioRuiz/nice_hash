@@ -111,13 +111,24 @@ class NiceHash
           end
         elsif value.kind_of?(Array)
           array_pattern = false
-          value.each { |v|
+          if value.size == 1
+            v = value[0]
             if (v.kind_of?(String) or v.kind_of?(Symbol)) and StringPattern.analyze(v, silent: true).kind_of?(StringPattern::Pattern)
-              hashv[key] = StringPattern.generate(value, expected_errors: expected_errors)
+              hashv[key] = []
+              (rand(5)+1).times do 
+                hashv[key]<<StringPattern.generate(v, expected_errors: expected_errors)
+              end
               array_pattern = true
-              break
             end
-          }
+          else
+            value.each { |v|
+              if (v.kind_of?(String) or v.kind_of?(Symbol)) and StringPattern.analyze(v, silent: true).kind_of?(StringPattern::Pattern)
+                hashv[key] = StringPattern.generate(value, expected_errors: expected_errors)
+                array_pattern = true
+                break
+              end
+            }
+          end
           unless array_pattern
             value_ret = Array.new
             value.each { |v|
