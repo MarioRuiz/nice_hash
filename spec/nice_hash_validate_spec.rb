@@ -129,11 +129,12 @@ RSpec.describe NiceHash, "#validate" do
   end
 
   if Gem::Version.new(RUBY_VERSION)>=Gem::Version.new('2.6')
-    it 'validates infinite ranges' do
-      hash = { age: 20.. }
-      expect(hash.validate({age: 30})).to eq ({})
-      expect(hash.validate({age: 10})).to eq ({age: false})
-      expect(hash.validate({age: '20'})).to eq ({age: false})
-    end
+    #todo: add theses tests when finding out how they can be read on ruby 2.5 ans 2.4 without complaining
+    #it 'validates infinite ranges' do
+    #  hash = { age: 20.. }
+    #  expect(hash.validate({age: 30})).to eq ({})
+    #  expect(hash.validate({age: 10})).to eq ({age: false})
+    #  expect(hash.validate({age: '20'})).to eq ({age: false})
+    #end
   end
 end
