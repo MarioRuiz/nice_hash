@@ -139,4 +139,30 @@ RSpec.describe NiceHash, "#generate" do
     my_hash.send_email = "false"
     expect(my_hash.gen.email).to eq ""
   end
+
+  it "returns the array of values for array of pattern" do
+    my_hash = {example: [ :'3:N' ]}
+    new_hash = NiceHash.generate(my_hash)
+    expect(new_hash.example.size).not_to be 0
+    expect(new_hash.example.join).to match(/^\d+$/)
+  end
+
+  if Gem::Version.new(RUBY_VERSION)>=Gem::Version.new('2.6')
+    it 'generates values for infinite ranges' do
+      my_hash = { age: 20.. }
+      new_hash = NiceHash.generate(my_hash)
+      expect(new_hash.age).to be >= 20
+    end
+    it 'generates wrong values for infinite ranges' do
+      my_hash = { age: 20.. }
+      new_hash = NiceHash.generate(my_hash, errors: :value)
+      expect(new_hash.age).not_to match(/^\d+$/)
+      new_hash = NiceHash.generate(my_hash, errors: :min_length)
+      expect(new_hash.age).to be < 20
+      new_hash = NiceHash.generate(my_hash, errors: :max_length)
+      expect(new_hash.age).to be nil
+      expect(new_hash).to be {}
+    end
+  end
+  
 end

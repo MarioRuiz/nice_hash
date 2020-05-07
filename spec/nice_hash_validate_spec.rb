@@ -123,10 +123,17 @@ RSpec.describe NiceHash, "#validate" do
     hash = { ages: [ :'1-99:N' ] }
     expect(hash.validate({age: ['1','2']})).to eq ({})
   end
-
   it 'validates Array of a pattern wrong value' do
     hash = { ages: [ :'1-99:N' ] }
     expect(hash.validate({ages: ['1','2a']})).to eq ({:ages => [[], [:value, :string_set_not_allowed]]})
   end
 
+  if Gem::Version.new(RUBY_VERSION)>=Gem::Version.new('2.6')
+    it 'validates infinite ranges' do
+      hash = { age: 20.. }
+      expect(hash.validate({age: 30})).to eq ({})
+      expect(hash.validate({age: 10})).to eq ({age: false})
+      expect(hash.validate({age: '20'})).to eq ({age: false})
+    end
+  end
 end
