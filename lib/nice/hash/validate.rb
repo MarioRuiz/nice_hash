@@ -147,7 +147,7 @@ class NiceHash
               end
             }
             unless array_pattern or results.include?(key)
-              if value.size == 1 and values[key].is_a?(Array) and values[key].size > 1
+              if value.size == 1 and values[key].is_a?(Array) and values[key].size > 0
                 # for the case value == ['Ford|Newton|Seat'] and values == ['Ford', 'Newton', 'Ford']
                 i = 0
                 if values[key].class == value.class
