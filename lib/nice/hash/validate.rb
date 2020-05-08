@@ -147,7 +147,7 @@ class NiceHash
               end
             }
             unless array_pattern or results.include?(key)
-              if value.size == 1 and values[key].size > 1
+              if value.size == 1 and values[key].is_a?(Array) and values[key].size > 1
                 # for the case value == ['Ford|Newton|Seat'] and values == ['Ford', 'Newton', 'Ford']
                 i = 0
                 if values[key].class == value.class
@@ -174,10 +174,12 @@ class NiceHash
                 value.each { |v|
                   if v.is_a?(Hash)
                     res = NiceHash.validate([v, select_hash_key], values[key][i], only_patterns: only_patterns)
-                  else
+                  elsif v.is_a?(Array)
                     # for the case {cars: ['Ford|Newton|Seat']}
                     res = NiceHash.validate([{ key => v }, select_hash_key], { key => values[key][i] }, only_patterns: only_patterns)
                     array_pattern = true
+                  else
+                    res = []
                   end
                   if res.size > 0
                     results[key] = Array.new() if !results.keys.include?(key)

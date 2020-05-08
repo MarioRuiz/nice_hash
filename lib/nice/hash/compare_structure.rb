@@ -33,13 +33,14 @@ class NiceHash
       structure.each do |key, value|
         if patterns.key?(key) and replica.key?(key)
           unless (patterns[key].is_a?(Array) and replica[key].is_a?(Array) and replica[key].empty?) or 
+            (compare_only_if_exist_key and replica.key?(key) and replica[key].nil?) or 
             {key => patterns[key]}.validate({key => replica[key]}).empty?
             puts "NiceHash.compare_structure: key :#{key} not following pattern #{patterns[key]}. value: #{replica[key]}"
             success = false
           end
         end
 
-        if compare_only_if_exist_key and replica.key?(key)
+        if compare_only_if_exist_key and replica.key?(key) and !replica[key].nil?
           unless compare_structure(value, replica[key], compare_only_if_exist_key, patterns)
             puts "NiceHash.compare_structure: key :#{key} different."
             success = false
