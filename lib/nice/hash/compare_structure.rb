@@ -23,6 +23,7 @@ class NiceHash
   #    #>true
   ##################################################
   def NiceHash.compare_structure(structure, replica, compare_only_if_exist_key = false, patterns = {})
+    patterns = {} if patterns.nil?
     unless structure.class == replica.class or
             ((structure.is_a?(TrueClass) or structure.is_a?(FalseClass)) and (replica.is_a?(TrueClass) or replica.is_a?(FalseClass)))
       puts "NiceHash.compare_structure: different object type #{structure.class} is not #{replica.class}. expected: #{structure.inspect}. found: #{replica.inspect}."
@@ -30,6 +31,7 @@ class NiceHash
     end
     success = true
     if structure.is_a?(Hash)
+      patterns = {} unless patterns.is_a?(Hash)
       structure.each do |key, value|
         if patterns.key?(key) and replica.key?(key)
           unless (patterns[key].is_a?(Array) and replica[key].is_a?(Array) and replica[key].empty?) or 
