@@ -217,4 +217,16 @@ RSpec.describe NiceHash do
     expect(hash).to eq({"uno"=>111, :dos=>222, :tres=>3})
   end
 
+  it 'returns true if object in? array' do
+    expect('uno'.in?(['uno','dos'])).to be true
+    expect(:uno.in? [:uno, :dos]).to be true
+    expect(5.in? [1,2,3,4,5]).to be true
+  end
+
+  it 'returns false if object not in? array' do
+    expect('unox'.in?(['uno','dos'])).to be false
+    expect(:unox.in? [:uno, :dos]).to be false
+    expect(6.in? [1,2,3,4,5]).to be false
+  end
+
 end

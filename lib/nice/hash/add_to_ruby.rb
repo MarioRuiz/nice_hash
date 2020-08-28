@@ -292,12 +292,12 @@ class Hash
   alias patterns pattern_fields
 end
 
-###########################################################################
-# symbolize hash of arrays and array of hashes
-# Taken from gist https://gist.github.com/Integralist/9503099
-# Thanks to @integralist
-###########################################################################
 class Object
+  ###########################################################################
+  # symbolize hash of arrays and array of hashes
+  # Taken from gist https://gist.github.com/Integralist/9503099
+  # Thanks to @integralist
+  ###########################################################################
   def deep_symbolize_keys
     if is_a? Hash
       return reduce({}) do |memo, (k, v)|
@@ -312,6 +312,14 @@ class Object
     end
     self
   end
+  
+  ###########################################################################
+  # include? but the opposite. Check if the object is included on the array
+  ###########################################################################
+  def in?(array)
+      array.include?(self)
+  end
+  
 end
 
 class Array

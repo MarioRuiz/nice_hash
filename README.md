@@ -900,6 +900,17 @@ value.is_a?(Boolean) #> true
 text.is_a?(Boolean) #> false
 
 ```
+
+#### in?(array)
+Added method in? to all objects that accepts array as a parameter.
+
+```ruby
+'uno'.in?(['uno','dos']) #> true
+:uno.in? [:uno, :dos] #> true
+5.in? [1,2,3,4,6] #> false
+
+```
+
 ### Other tools integration
 
 #### Tabulo
