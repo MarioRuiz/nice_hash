@@ -60,7 +60,7 @@ class String
         result = feed_symbols
       end
     rescue StandardError => stack
-      puts stack.to_s
+      puts "#{stack.backtrace[-1]} #{stack.to_s}"
     end
     result
   end
