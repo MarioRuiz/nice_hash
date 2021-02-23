@@ -61,6 +61,7 @@ class String
       end
     rescue StandardError => stack
       puts "#{stack.backtrace[-1]} #{stack.to_s}"
+      puts stack.backtrace.join("\n\t") if $DEBUG
     end
     result
   end
