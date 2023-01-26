@@ -37,6 +37,7 @@ To use nice_hash on Http connections take a look at nice_http gem: https://githu
     + [Random dates](#random-dates)
     + [Deep copy of a hash](#deep-copy-of-a-hash)
     + [Nested deletion](#nested-deletion)
+    + [Deep merge of two hashes](#deep-merge-of-two-hashes)
     + [Boolean class](#boolean-class)
   * [Other tools integration](#other-tools-integration)
     + [Tabulo](#tabulo)
@@ -888,6 +889,16 @@ If you want to delete a key on a nested hash you can use `delete_nested` and sup
     #>{:user=>{:address=>{:country=>"Spain"}, :name=>"Peter", :age=>33}, :customer=>true}
 
 ```
+#### Deep merge of two hashes
+If you need to merge multidimensional hashes
+
+```ruby
+my_hash = {one: 1, two: 2, three: {car: 'seat'}}
+other_hash = {one: 11, four: 44, three: {car: 'ferrari', model: 'unknown'}}
+p my_hash.nice_merge(other_hash)
+#>{:one=>11, :two=>2, :three=>{:car=>"ferrari", :model=>"unknown"}, :four=>44}
+```
+
 
 #### Boolean class
 We added the possibility to check if a value is boolean or not since in Ruby doesn't exist, just TrueClass and FalseClass

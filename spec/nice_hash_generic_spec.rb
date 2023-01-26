@@ -229,4 +229,13 @@ RSpec.describe NiceHash do
     expect(6.in? [1,2,3,4,5]).to be false
   end
 
+  it "deep merge two hashes" do
+    my_hash = { one: 1, two: 2, three: { car: "seat", model: 'none' }, four: [{five: 5}] }
+    other_hash = {one: 11, three: { car: "changed" }, four: [{five: 55}] }
+
+    my_new_hash = my_hash.nice_merge(other_hash)
+    expect(my_new_hash).to eq ({ :one => 11, :two => 2, :three => { :car => "changed", :model => 'none' }, :four => [{:five => 55}] })
+  end
+
+
 end

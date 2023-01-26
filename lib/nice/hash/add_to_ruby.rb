@@ -288,9 +288,26 @@ class Hash
     NiceHash.nice_filter(self, keys)
   end
 
+  ###########################################################################
+  # Merging multi-dimensional hashes
+  ###########################################################################
+  def nice_merge(hash = nil)
+    return self unless hash.is_a?(Hash)
+    base = self
+    hash.each do |key, v|
+      if base[key].is_a?(Hash) && hash[key].is_a?(Hash)
+        base[key].nice_merge(hash[key])
+      else
+        base[key]= hash[key]
+      end
+    end
+    base
+  end
+
   alias gen generate
   alias val validate
   alias patterns pattern_fields
+  alias nice_copy deep_copy
 end
 
 class Object
