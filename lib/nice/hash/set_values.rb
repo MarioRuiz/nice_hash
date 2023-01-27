@@ -34,6 +34,7 @@ class NiceHash
         end
 
       end
+
       hash_array.each do |k, v|
         #for the case of using same_values: [:pwd1, :pwd2] => :'10:N' and supply hash_values: pwd1: 'a', pwd2: 'b'
         #instead of [:pwd1,:pwd2]=>'a'
@@ -69,8 +70,8 @@ class NiceHash
               hash_values.each do |kk,vv|
                 if kk.to_s.match?(/^#{k}\./)
                   kk = kk.to_s.gsub(/^#{k}\./, '').to_sym
-                  new_hash_values[kk] = vv
                 end
+                new_hash_values[kk] = vv
               end
               hashv[k] = NiceHash.set_values(v, new_hash_values)
             else
@@ -81,9 +82,11 @@ class NiceHash
           end
         end
       end
+
       hash_values.each do |k, v|
         hashv = NiceHash.set_nested(hashv, k, v, true) if k.is_a?(Hash)
       end
+      
       return hashv
     elsif hash_array.is_a?(Array) and hash_array.size > 0
       hashv = Array.new
