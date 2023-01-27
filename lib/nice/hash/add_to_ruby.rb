@@ -198,8 +198,8 @@ class Hash
   # returns a clean copy of the hash
   ###########################################################################
   def deep_copy
-    Marshal.load(Marshal.dump(self))
-  end
+    NiceHash.deep_clone(self)
+  end  
 
   ###########################################################################
   # It will filter the hash by the key specified on select_hash_key.
@@ -291,17 +291,24 @@ class Hash
   ###########################################################################
   # Merging multi-dimensional hashes
   ###########################################################################
-  def nice_merge(hash = nil)
-    return self unless hash.is_a?(Hash)
-    base = self
+  def nice_merge(hash = nil, return_self = false)
+    if return_self
+      base = self
+    else
+      base = self.deep_copy
+    end
+    return base unless hash.is_a?(Hash)
     hash.each do |key, v|
       if base[key].is_a?(Hash) && hash[key].is_a?(Hash)
-        base[key].nice_merge(hash[key])
+        base[key].nice_merge!(hash[key])
       else
         base[key]= hash[key]
       end
     end
     base
+  end
+  def nice_merge!(hash = nil)
+    return nice_merge(hash, true)
   end
 
   alias gen generate

@@ -181,6 +181,17 @@ RSpec.describe NiceHash do
     expect(my_hash).to eq ({ :one => 1, :two => 2, :three => { :car => "changed" } })
   end
 
+  it "deep copies of a hash including lambda" do
+    my_hash = { one: 1, two: 2, three: { car: "seat" }, four: lambda { 1 + 1} }
+
+    my_new_hash = my_hash.deep_copy # using deep_copy method
+    expect(my_hash.four).to be_a_kind_of(Proc)
+    my_new_hash[:three][:car] = "changed"
+    my_new_hash[:two] = "changed"
+    # my_hash doesn't change
+    expect(my_hash).to include ({ :one => 1, :two => 2, :three => { :car => "seat" }})
+  end
+
   it "accepts Boolean class" do
     value = true
     text = "true"
@@ -235,6 +246,15 @@ RSpec.describe NiceHash do
 
     my_new_hash = my_hash.nice_merge(other_hash)
     expect(my_new_hash).to eq ({ :one => 11, :two => 2, :three => { :car => "changed", :model => 'none' }, :four => [{:five => 55}] })
+    expect(my_hash).to eq ({ one: 1, two: 2, three: { car: "seat", model: 'none' }, four: [{five: 5}] })
+  end
+
+  it "deep merge two hashes and returns on self" do
+    my_hash = { one: 1, two: 2, three: { car: "seat", model: 'none' }, four: [{five: 5}] }
+    other_hash = {one: 11, three: { car: "changed" }, four: [{five: 55}] }
+
+    my_hash.nice_merge!(other_hash)
+    expect(my_hash).to eq ({ :one => 11, :two => 2, :three => { :car => "changed", :model => 'none' }, :four => [{:five => 55}] })
   end
 
 

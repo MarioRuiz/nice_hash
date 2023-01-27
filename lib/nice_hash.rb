@@ -16,6 +16,7 @@ require_relative "nice/hash/set_nested"
 require_relative "nice/hash/set_values"
 require_relative "nice/hash/transtring"
 require_relative "nice/hash/validate"
+require_relative "nice/hash/deep_clone"
 
 
 require "string_pattern"
