@@ -22,8 +22,16 @@ class NiceHash
   ##################################################
   def self.deep_clone(obj)
     obj.clone.tap do |new_obj|
-      new_obj.each do |key, val|
-        new_obj[key] = deep_clone(val) if val.is_a?(Hash)
+      if new_obj.is_a?(Array)
+        new_obj.each_with_index do |val, i|
+          new_obj[i] = deep_clone(val)
+        end
+      elsif new_obj.is_a?(Hash)
+        new_obj.each do |key, val|
+          new_obj[key] = deep_clone(val)
+        end
+      else
+        new_obj = obj.clone
       end
     end
   end
