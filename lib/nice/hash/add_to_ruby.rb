@@ -109,6 +109,14 @@ class Array
     NiceHash.nice_filter(self, keys)
   end
 
+  ###########################################################################
+  # returns a clean copy
+  ###########################################################################
+  def deep_copy
+    NiceHash.deep_clone(self)
+  end  
+  
+  alias nice_copy deep_copy
 end
 
 require "date"

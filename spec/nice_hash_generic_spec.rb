@@ -199,6 +199,24 @@ RSpec.describe NiceHash do
     expect(my_hash).to eq ({ one: 1, two: 2, three: { car: "seat" }, four: [{five: "changed"}, {six: 6}], seven: [ 'changed', 8 ,9] })
   end
 
+  it "deep copies of an array of hashes" do
+    my_hash = [
+      { one: 1, two: 2, three: { car: "seat" }, four: [{five: 5}, {six: 6}], seven: [ 7, 8 ,9] },
+      { one: 11, two: 22, three: { car: "seata" }, four: [{five: 55}, {six: 66}], seven: [ 77, 88 ,99] }
+    ]
+
+    my_new_hash = my_hash.deep_copy # using deep_copy method
+    my_new_hash[0][:four][0][:five] = "changed"
+    my_new_hash[0][:seven][0] = "changed"
+    my_new_hash[0][:two] = "changed"
+    # my_hash doesn't change
+    expect(my_hash).to eq (
+      [
+        { one: 1, two: 2, three: { car: "seat" }, four: [{five: 5}, {six: 6}], seven: [ 7, 8 ,9] },
+        { one: 11, two: 22, three: { car: "seata" }, four: [{five: 55}, {six: 66}], seven: [ 77, 88 ,99] }
+      ]
+    )
+  end
 
   it "deep copies of a hash including lambda" do
     my_hash = { one: 1, two: 2, three: { car: "seat" }, four: lambda { 1 + 1} }
