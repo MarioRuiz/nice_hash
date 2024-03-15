@@ -1,18 +1,20 @@
 class String
-  ###########################################################################
-  # When comparing an string and an integer, float or nil, it will be automatically converted to string:
-  #   "300" == 300 #will return true
-  #   200.1=="200.1" #will return true
-  #   ""==nil #will return true
-  ###########################################################################
-  def ==(par)
-    if par.is_a?(Integer) || par.nil? || par.is_a?(Float)
-      super(par.to_s)
-    else
-      super(par)
+
+  if SP_COMPARE_NUMBERS_AS_STRINGS
+    ###########################################################################
+    # When comparing an string and an integer, float or nil, it will be automatically converted to string:
+    #   "300" == 300 #will return true
+    #   200.1=="200.1" #will return true
+    #   ""==nil #will return true
+    ###########################################################################
+    def ==(par)
+      if par.is_a?(Integer) || par.nil? || par.is_a?(Float)
+        super(par.to_s)
+      else
+        super(par)
+      end
     end
   end
-
   ###########################################################################
   #  In case the string is a json it will return the keys specified. the keys need to be provided as symbols.
   #  In case the string is not a json then it will notify the error and return empty Hash
@@ -114,8 +116,8 @@ class Array
   ###########################################################################
   def deep_copy
     NiceHash.deep_clone(self)
-  end  
-  
+  end
+
   alias nice_copy deep_copy
 end
 
@@ -207,7 +209,7 @@ class Hash
   ###########################################################################
   def deep_copy
     NiceHash.deep_clone(self)
-  end  
+  end
 
   ###########################################################################
   # It will filter the hash by the key specified on select_hash_key.
@@ -280,7 +282,7 @@ class Hash
 
   ###########################################################################
   # Search if the hash contains the supplied key
-  # search can be a string, symbol or regexp. 
+  # search can be a string, symbol or regexp.
   # In case of string or symbol it will return true even if only part of the key fits the 'search'
   ###########################################################################
   def has_rkey?(search)
@@ -345,14 +347,14 @@ class Object
     end
     self
   end
-  
+
   ###########################################################################
   # include? but the opposite. Check if the object is included on the array
   ###########################################################################
   def in?(array)
       array.include?(self)
   end
-  
+
 end
 
 class Array
