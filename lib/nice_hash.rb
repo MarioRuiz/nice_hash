@@ -1,10 +1,5 @@
-SP_ADD_TO_RUBY ||= true
-if defined?(RSpec)
-  SP_COMPARE_NUMBERS_AS_STRINGS ||= true
-else
-  SP_COMPARE_NUMBERS_AS_STRINGS ||= false
-end
-#todo: consider adding SP_USE_NESTED_KEYS = true
+SP_ADD_TO_RUBY = true if !defined?(SP_ADD_TO_RUBY)
+SP_COMPARE_NUMBERS_AS_STRINGS = true if !defined?(SP_COMPARE_NUMBERS_AS_STRINGS)
 
 require_relative "nice/hash/add_to_ruby" if SP_ADD_TO_RUBY
 require_relative "nice/hash/change_one_by_one"
@@ -22,7 +17,6 @@ require_relative "nice/hash/set_values"
 require_relative "nice/hash/transtring"
 require_relative "nice/hash/validate"
 require_relative "nice/hash/deep_clone"
-
 
 require "string_pattern"
 

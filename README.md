@@ -171,6 +171,15 @@ Also if you have a JSON string you want to parse it and get the values of certai
     #> {:name=>["Peter Smith", ["myFavor1", "Special ticket"]], :idt=>[345, 3123, 3145]}
 ```
 
+To make easier to compare values by default it is setup SP_COMPARE_NUMBERS_AS_STRINGS = true, that will return true for example in these comparations:  
+* '300' == 300
+* '300.12' == 300.12
+* "" == nil  
+
+To avoid that set SP_COMPARE_NUMBERS_AS_STRINGS = false before `require 'nice_hash'`  
+Take in consideration certain libraries (fex 'net/ldap') are failing if `SP_COMPARE_NUMBERS_AS_STRINGS` is set to true. Since NiceHash is modifying the String class.   
+
+
 ### How to access the different keys
 
 You can access the keys of the hash like always, but now we added to the Hash class the posibility of accessing it using:
