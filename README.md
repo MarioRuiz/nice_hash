@@ -22,32 +22,37 @@ To generate the strings following a pattern take a look at the documentation for
 To use nice_hash on Http connections take a look at nice_http gem: https://github.com/MarioRuiz/nice_http
 
 ## Table of contents
-- [Installation](#installation)
-- [Configuration](#configuration)
-- [Usage](#usage)
-  * [How to access the different keys](#how-to-access-the-different-keys)
-  * [Change all values on the keys we specified](#change-all-values-on-the-keys-we-specified)
-  * [Filtering / Selecting an specific key on the hash and subhashes](#filtering---selecting-an-specific-key-on-the-hash-and-subhashes)
-  * [How to generate the hash with the criteria we want](#how-to-generate-the-hash-with-the-criteria-we-want)
-  * [How to generate the hash with wrong values for the string patterns specified on the hash](#how-to-generate-the-hash-with-wrong-values-for-the-string-patterns-specified-on-the-hash)
-  * [Return the select_fields or the pattern_fields](#return-the-select-fields-or-the-pattern-fields)
-  * [dig and bury Hash methods](#dig-and-bury-hash-methods)
-  * [Validating hashes](#validating-hashes)
-  * [Change only one value at a time and return an Array of Hashes](#change-only-one-value-at-a-time-and-return-an-array-of-hashes)
-  * [Adding other values on run time when calling `generate` method](#adding-other-values-on-run-time-when-calling--generate--method)
-    + [Accessing other values of the hash on run time](#accessing-other-values-of-the-hash-on-run-time)
-  * [Compare the structure of a replica with the supplied structure](#compare-the-structure-of-a-replica-with-the-supplied-structure)
-  * [Other useful methods](#other-useful-methods)
-    + [Time stamp](#time-stamp)
-    + [Random dates](#random-dates)
-    + [Deep copy of a hash](#deep-copy-of-a-hash)
-    + [Nested deletion](#nested-deletion)
-    + [Deep merge of two hashes](#deep-merge-of-two-hashes)
-    + [Boolean class](#boolean-class)
-  * [Other tools integration](#other-tools-integration)
-    + [Tabulo](#tabulo)
-- [Contributing](#contributing)
-- [License](#license)
+- [NiceHash](#nicehash)
+  - [Table of contents](#table-of-contents)
+  - [Installation](#installation)
+  - [Configuration](#configuration)
+  - [Usage](#usage)
+    - [How to access the different keys](#how-to-access-the-different-keys)
+    - [Change all values on the keys we specified](#change-all-values-on-the-keys-we-specified)
+    - [Filtering / Selecting an specific key on the hash and subhashes](#filtering--selecting-an-specific-key-on-the-hash-and-subhashes)
+    - [How to generate the hash with the criteria we want](#how-to-generate-the-hash-with-the-criteria-we-want)
+    - [How to generate the hash with wrong values for the string patterns specified on the hash](#how-to-generate-the-hash-with-wrong-values-for-the-string-patterns-specified-on-the-hash)
+    - [Return the select\_fields or the pattern\_fields](#return-the-select_fields-or-the-pattern_fields)
+    - [dig and bury Hash methods](#dig-and-bury-hash-methods)
+    - [Validating hashes](#validating-hashes)
+    - [Change only one value at a time and return an Array of Hashes](#change-only-one-value-at-a-time-and-return-an-array-of-hashes)
+    - [Adding other values on run time when calling `generate` method](#adding-other-values-on-run-time-when-calling-generate-method)
+      - [Accessing other values of the hash on run time](#accessing-other-values-of-the-hash-on-run-time)
+    - [Compare the structure of a replica with the supplied structure](#compare-the-structure-of-a-replica-with-the-supplied-structure)
+    - [Other useful methods](#other-useful-methods)
+      - [Hash diff](#hash-diff)
+      - [Flatten / unflatten keys](#flatten--unflatten-keys)
+      - [Time stamp](#time-stamp)
+      - [Random dates](#random-dates)
+      - [Deep copy of a hash](#deep-copy-of-a-hash)
+      - [Nested deletion](#nested-deletion)
+      - [Deep merge of two hashes](#deep-merge-of-two-hashes)
+      - [Boolean class](#boolean-class)
+      - [in?(array)](#inarray)
+    - [Other tools integration](#other-tools-integration)
+      - [Tabulo](#tabulo)
+  - [Contributing](#contributing)
+  - [License](#license)
 
 ## Installation
 
@@ -397,6 +402,23 @@ new_hash = my_hash.generate(:correct)
 new_hash = my_hash.select_key(:correct).generate
 ```
 
+**Reproducible generation (seed)**  
+With **string_pattern** 2.4+, pass `seed:` to get the same hash every time (useful for tests):
+
+```ruby
+new_hash = my_hash.generate(:correct, seed: 42)
+# Same result every time for the same seed
+```
+
+**Generate n hashes at once**  
+Use `generate_n` (alias `gen_n`) to build several different hashes in one call (e.g. for bulk or boundary tests):
+
+```ruby
+hashes = NiceHash.generate_n(my_hash, 5, :correct)
+hashes = my_hash.generate_n(5, :correct)   # or my_hash.gen_n(5, :correct)
+# With seed: hashes = my_hash.generate_n(5, :correct, seed: 123)
+# => array of 5 hashes
+```
 
 In case of filtering by :correct new_hash would have a value like this for example:
 
@@ -864,8 +886,34 @@ Valid patterns:
   - 10.. (from 10 to infinite) Only from Ruby 2.6
 - DateTime: it will verify if the value is following Time stamp string '2019-06-20T12:01:09.971Z' or if the object is a Time, Date or DateTime class
 - selectors, one of the values. Example: "uno|dos|tres"
+- **:uuid** (string_pattern 2.4+): UUID v4 format
 
 ### Other useful methods
+
+#### Hash diff
+Compare two hashes and get differences with dot-notation paths (useful for API or test assertions):
+
+```ruby
+expected = { user: { address: { city: "Madrid" } } }
+actual   = { user: { address: { city: "London" } } }
+NiceHash.diff(expected, actual)
+#=> { "user.address.city" => { expected: "Madrid", got: "London" } }
+
+# Or on a hash instance:
+expected.diff(actual)
+```
+
+#### Flatten / unflatten keys
+Convert between nested hashes and flat hashes with dot-notation keys:
+
+```ruby
+h = { user: { address: { city: "Madrid" } } }
+h.flatten_keys
+#=> { "user.address.city" => "Madrid" }
+
+{ "user.address.city" => "Madrid" }.unflatten_keys
+#=> { user: { address: { city: "Madrid" } } }
+```
 
 #### Time stamp
 In case you need the time stamp, we added the method `stamp` to the `Time` class
