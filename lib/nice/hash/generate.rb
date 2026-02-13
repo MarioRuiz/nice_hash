@@ -58,6 +58,7 @@ class NiceHash
     if expected_errors.kind_of?(Symbol)
       expected_errors = [expected_errors]
     end
+    sp_opts = { expected_errors: expected_errors }.merge(synonyms)
 
     if pattern_hash.kind_of?(Hash) and pattern_hash.size > 0
       pattern_hash.each { |key, value|
@@ -70,12 +71,14 @@ class NiceHash
           if value.keys.include?(select_hash_key)
             value = value[select_hash_key]
           else
-            value = NiceHash.generate(value, select_hash_key, expected_errors: expected_errors)
+            value = NiceHash.generate(value, select_hash_key, expected_errors: expected_errors, **synonyms)
           end
         end
-        if value.kind_of?(String) or value.kind_of?(Symbol)
+        if value == :uuid
+          hashv[key] = expected_errors.empty? ? StringPattern.uuid : (StringPattern.uuid[0..-2] + "X")
+        elsif value.kind_of?(String) or value.kind_of?(Symbol)
           if ((StringPattern.optimistic and value.kind_of?(String)) or value.kind_of?(Symbol)) and value.to_s.scan(/^!?\d+-?\d*:.+/).size > 0
-            hashv[key] = StringPattern.generate(value, expected_errors: expected_errors)
+            hashv[key] = StringPattern.generate(value, **sp_opts)
           elsif ((StringPattern.optimistic and value.kind_of?(String)) or value.kind_of?(Symbol)) and value.to_s.scan(/^([\w\s\-]+\|)+[\w\s\-]+$/).size > 0
             if expected_errors.include?(:min_length) or (expected_errors.include?(:length) and rand.round == 0)
               min = value.to_s.split("|").min { |a, b| a.size <=> b.size }
@@ -94,10 +97,11 @@ class NiceHash
                 v = value.to_s.split("|").sample
               end
               unless expected_errors.include?(:string_set_not_allowed)
-                v = StringPattern.generate(:"#{v.size}:[#{value.to_s.split("|").join.split(//).uniq.join}]")
+                v = StringPattern.generate(:"#{v.size}:[#{value.to_s.split("|").join.split(//).uniq.join}]", **sp_opts)
                 hashv[key] = v unless value.to_s.split("|").include?(v)
               end
               unless hashv.keys.include?(key)
+                # Need a valid 1-char not in the allowed set (do not pass expected_errors)
                 one_wrong_letter = StringPattern.generate(:"1:LN$[%#{value.to_s.split("|").join.split(//).uniq.join}%]")
                 v[rand(v.size)] = one_wrong_letter
                 hashv[key] = v unless value.to_s.split("|").include?(v)
@@ -115,15 +119,15 @@ class NiceHash
             v = value[0]
             if (v.kind_of?(String) or v.kind_of?(Symbol)) and StringPattern.analyze(v, silent: true).kind_of?(StringPattern::Pattern)
               hashv[key] = []
-              (rand(5)+1).times do 
-                hashv[key]<<StringPattern.generate(v, expected_errors: expected_errors)
+              (rand(5)+1).times do
+                hashv[key]<<StringPattern.generate(v, **sp_opts)
               end
               array_pattern = true
             end
           else
             value.each { |v|
               if (v.kind_of?(String) or v.kind_of?(Symbol)) and StringPattern.analyze(v, silent: true).kind_of?(StringPattern::Pattern)
-                hashv[key] = StringPattern.generate(value, expected_errors: expected_errors)
+                hashv[key] = StringPattern.generate(value, **sp_opts)
                 array_pattern = true
                 break
               end
@@ -133,9 +137,9 @@ class NiceHash
             value_ret = Array.new
             value.each { |v|
               if v.is_a?(Hash)
-                ret = NiceHash.generate(v, select_hash_key, expected_errors: expected_errors)
+                ret = NiceHash.generate(v, select_hash_key, expected_errors: expected_errors, **synonyms)
               else
-                ret = NiceHash.generate({ doit: v }, select_hash_key, expected_errors: expected_errors)
+                ret = NiceHash.generate({ doit: v }, select_hash_key, expected_errors: expected_errors, **synonyms)
                 ret = ret[:doit] if ret.is_a?(Hash) and ret.key?(:doit)
               end
               ret = v if ret.kind_of?(Hash) and ret.size == 0
@@ -208,7 +212,7 @@ class NiceHash
         elsif value.kind_of?(Proc)
           hashv[key] = value.call
         elsif value.kind_of?(Regexp)
-          hashv[key] = value.generate(expected_errors: expected_errors)
+          hashv[key] = value.generate(**sp_opts)
         else
           hashv[key] = value
         end
@@ -225,5 +229,20 @@ class NiceHash
 
     return hashv
   end
-    
+
+  ###########################################################################
+  # Generates n different hashes from the same pattern (useful for bulk or boundary tests).
+  # input:
+  #   pattern_hash: (Hash) Hash we want to use to generate the values
+  #   n: (Integer) Number of hashes to generate
+  #   select_hash_key: (key value) (optional) The key we want to select on the subhashes
+  #   expected_errors: (Array) (optional) (alias: errors) Same as in generate
+  # output: (Array of Hash)
+  # examples:
+  #   hashes = NiceHash.generate_n(my_hash, 5, :correct)
+  #   hashes = my_hash.generate_n(5, :correct)
+  ###########################################################################
+  def NiceHash.generate_n(pattern_hash, n, select_hash_key = nil, expected_errors: [], **synonyms)
+    n.times.map { NiceHash.generate(pattern_hash, select_hash_key, expected_errors: expected_errors, **synonyms) }
+  end
 end

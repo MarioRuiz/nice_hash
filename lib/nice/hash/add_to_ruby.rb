@@ -166,6 +166,16 @@ class Hash
   #   my_hash.city="Paris"
   #   my_hash.products[1].price.wrong="AAAAA"
   ###########################################################################
+  def respond_to_missing?(method_name, include_private = false)
+    sym = (method_name.to_s[0] == "_" ? method_name.to_s[1..-1].to_sym : method_name)
+    return true if key?(sym) || key?(sym.to_s)
+    if method_name.to_s[-1] == "="
+      setter_key = method_name.to_s.chop
+      return true if key?(setter_key) || key?(setter_key.to_sym)
+    end
+    false
+  end
+
   def method_missing(m, *arguments, &block)
     m = m[1..-1].to_sym if m[0] == "_"
     if key?(m)
@@ -229,6 +239,13 @@ class Hash
   ###########################################################################
   def generate(select_hash_key = nil, expected_errors: [], **synonyms)
     NiceHash.generate(self, select_hash_key, expected_errors: expected_errors, **synonyms)
+  end
+
+  ###########################################################################
+  # Generates n different hashes from the same pattern. More info: NiceHash.generate_n
+  ###########################################################################
+  def generate_n(n, select_hash_key = nil, expected_errors: [], **synonyms)
+    NiceHash.generate_n(self, n, select_hash_key, expected_errors: expected_errors, **synonyms)
   end
 
   ###########################################################################
@@ -299,6 +316,28 @@ class Hash
   end
 
   ###########################################################################
+  # Compares with another hash and returns differences with dot-notation paths.
+  # More info: NiceHash.diff
+  ###########################################################################
+  def diff(other)
+    NiceHash.diff(self, other)
+  end
+
+  ###########################################################################
+  # Flattens the hash to dot-notation keys. More info: NiceHash.flatten_keys
+  ###########################################################################
+  def flatten_keys
+    NiceHash.flatten_keys(self)
+  end
+
+  ###########################################################################
+  # Unflattens a hash with dot-notation keys into nested hash. More info: NiceHash.unflatten_keys
+  ###########################################################################
+  def unflatten_keys
+    NiceHash.unflatten_keys(self)
+  end
+
+  ###########################################################################
   # Merging multi-dimensional hashes
   ###########################################################################
   def nice_merge(hash = nil, return_self = false)
@@ -322,6 +361,7 @@ class Hash
   end
 
   alias gen generate
+  alias gen_n generate_n
   alias val validate
   alias patterns pattern_fields
   alias nice_copy deep_copy
@@ -365,6 +405,11 @@ class Array
   #   my_array.city
   #   my_array._name
   ###########################################################################
+  def respond_to_missing?(method_name, include_private = false)
+    sym = (method_name.to_s[0] == "_" ? method_name.to_s[1..-1].to_sym : method_name)
+    any? { |elem| elem.is_a?(Hash) && (elem.key?(sym) || elem.key?(sym.to_s)) }
+  end
+
   def method_missing(m, *arguments, &block)
     m = m[1..-1].to_sym if m[0] == "_"
     array = []

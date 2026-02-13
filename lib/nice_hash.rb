@@ -5,6 +5,8 @@ require_relative "nice/hash/add_to_ruby" if SP_ADD_TO_RUBY
 require_relative "nice/hash/change_one_by_one"
 require_relative "nice/hash/compare_structure"
 require_relative "nice/hash/delete_nested"
+require_relative "nice/hash/diff"
+require_relative "nice/hash/flatten_keys"
 require_relative "nice/hash/generate"
 require_relative "nice/hash/get_all_keys"
 require_relative "nice/hash/get_values"
