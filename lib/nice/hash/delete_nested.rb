@@ -27,11 +27,16 @@ class NiceHash
     if keys.size == 1
       hash.delete(nested_key.to_sym)
     else
-      last_key = keys[-1]
-      eval("hash.#{keys[0..(keys.size - 2)].join(".")}.delete(:#{last_key})")
+      parent = hash
+      keys[0..-2].each do |k|
+        sym = k.to_sym
+        return hash unless parent.is_a?(Hash) && parent.key?(sym)
+        parent = parent[sym]
+      end
+      parent.delete(keys[-1].to_sym) if parent.is_a?(Hash)
     end
     return hash
   end
 
- 
+
 end

@@ -23,6 +23,7 @@ To use nice_hash on Http connections take a look at nice_http gem: https://githu
 
 ## Table of contents
 - [Installation](#installation)
+- [Configuration](#configuration)
 - [Usage](#usage)
   * [How to access the different keys](#how-to-access-the-different-keys)
   * [Change all values on the keys we specified](#change-all-values-on-the-keys-we-specified)
@@ -64,9 +65,34 @@ Or install it yourself as:
 
     $ gem install nice_hash
 
+## Configuration
+
+Set these constants **before** `require 'nice_hash'` if you need to change default behavior:
+
+- **`SP_ADD_TO_RUBY`** (default: `true`): When `true`, the gem adds methods to core classes (`Hash`, `Array`, `String`, `Object`, `Date`, `Time`, etc.). Set to `false` to avoid patching core classes and use only `NiceHash` class methods.
+- **`SP_COMPARE_NUMBERS_AS_STRINGS`** (default: `true`): When `true`, `String#==` is overridden so that strings are compared with numbers as strings (e.g. `'300' == 300` and `'' == nil`). Set to `false` if this causes issues with other gems (e.g. some versions of `net/ldap`).
+
+When using **string_pattern** 2.4+, you can also set **`StringPattern.logger`** (e.g. `Logger.new($stderr)`) to redirect generation/validation messages, and **`StringPattern.raise_on_error = true`** to raise on invalid patterns or impossible generation instead of returning empty strings.
+
+Example:
+
+```ruby
+SP_COMPARE_NUMBERS_AS_STRINGS = false
+require 'nice_hash'
+```
+
 ## Usage
 
-Remember!! To generate the strings following a pattern take a look at the documentation for string_pattern gem: https://github.com/MarioRuiz/string_pattern. You can also generate Spanish or English words. We added support for generating strings from regular expressions but it is only working for the ´generate´ method, use it with caution since it is still on an early stage of development. All you have to do is to add to a key the value as a Regular expression, for example the key uuid in here will generate a random value like this: "E0BDE5B5-A738-49E6-83C1-9D1FFB313788"
+Remember!! To generate the strings following a pattern take a look at the documentation for string_pattern gem: https://github.com/MarioRuiz/string_pattern. You can also generate Spanish or English words. We added support for generating strings from regular expressions but it is only working for the ´generate´ method, use it with caution since it is still on an early stage of development.
+
+For **UUID v4** you can use the shorthand `:uuid` (requires string_pattern 2.4+):
+
+```ruby
+my_hash = { id: :uuid, key: "Wsdf88888", doomId: :"10:N" }
+# id will be like "550e8400-e29b-41d4-a716-446655440000"
+```
+
+Or use a Regular expression for custom formats:
 
 ```ruby
 my_hash = { 

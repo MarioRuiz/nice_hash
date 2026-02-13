@@ -59,7 +59,7 @@ class NiceHash
     end
     values = values_hash_to_validate
     if pattern_hash.keys.size == get_all_keys(pattern_hash).size and values.keys.size != get_all_keys(values) and
-      pattern_hash.keys.size == pattern_hash.keys.flatten.size # dont't set_values for the case of same_value 
+      pattern_hash.keys.size == pattern_hash.keys.flatten.size # dont't set_values for the case of same_value
       # all patterns on patterns_hash are described on first level, so no same structure than values
       pattern_hash = values.set_values(pattern_hash)
     end
@@ -83,7 +83,9 @@ class NiceHash
         end
 
         if values.keys.include?(key)
-          if value.kind_of?(String) or value.kind_of?(Symbol)
+          if value == :uuid
+            results[key] = false unless StringPattern.valid_uuid?(values[key].to_s)
+          elsif value.kind_of?(String) or value.kind_of?(Symbol)
             if ((StringPattern.optimistic and value.kind_of?(String)) or value.kind_of?(Symbol)) and value.to_s.scan(/^!?\d+-?\d*:.+/).size > 0
               res = StringPattern.validate(pattern: value, text: values[key])
               results[key] = res if res.size > 0
@@ -133,7 +135,7 @@ class NiceHash
                     results[key] << res
                   end
                   if results[key].flatten.size == 0
-                    results.delete(key) 
+                    results.delete(key)
                   end
                 else
                   res = StringPattern.validate(pattern: value, text: values[key])
@@ -213,5 +215,5 @@ class NiceHash
     return results
   end
 
-    
+
 end

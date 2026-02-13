@@ -28,27 +28,19 @@ class NiceHash
     if keys.size == 1
       hash[nested_key.to_sym] = value unless only_if_exist and !hash.key?(nested_key.to_sym)
     else
-      exist = true
+      parent = hash
+      keys[0..-2].each do |k|
+        sym = k.to_sym
+        return hash unless parent.is_a?(Hash) && parent.key?(sym)
+        parent = parent[sym]
+      end
+      return hash unless parent.is_a?(Hash)
       if only_if_exist
-        ht = hash.deep_copy
-        keys.each do |k|
-          unless ht.key?(k.to_sym)
-            exist = false
-            break
-          end
-          ht = ht[k.to_sym]
-        end
+        return hash unless parent.key?(keys[-1].to_sym)
       end
-      if !only_if_exist or (only_if_exist and exist)
-        if value.is_a?(String)
-          eval("hash.#{nested_key}='#{value}'")
-        else
-          #todo: consider other kind of objects apart of strings
-          eval("hash.#{nested_key}=#{value}")
-        end
-      end
+      parent[keys[-1].to_sym] = value
     end
     return hash
   end
- 
+
 end
