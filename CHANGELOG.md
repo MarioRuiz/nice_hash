@@ -38,6 +38,8 @@ All other changes are backwards compatible: same method signatures, new optional
 
 - Gemspec: `required_ruby_version` set to `>= 3.0`.
 - CI: Travis now includes Ruby 3.2 and 3.3.
+- CI: Added GitHub Actions workflow (Ruby 3.0-3.3) with Coveralls parallel upload + finish step.
+- Test setup: Coveralls now runs only in GitHub Actions (`ENV["GITHUB_ACTIONS"] == "true"`) to avoid local upload errors.
 
 ## [1.18.7] - (previous releases)
 

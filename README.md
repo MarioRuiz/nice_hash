@@ -1,7 +1,7 @@
 # NiceHash
 
 [![Gem Version](https://badge.fury.io/rb/nice_hash.svg)](https://rubygems.org/gems/nice_hash)
-[![Build Status](https://travis-ci.com/MarioRuiz/nice_hash.svg?branch=master)](https://github.com/MarioRuiz/nice_hash)
+[![CI](https://github.com/MarioRuiz/nice_hash/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/MarioRuiz/nice_hash/actions/workflows/ci.yml)
 [![Coverage Status](https://coveralls.io/repos/github/MarioRuiz/nice_hash/badge.svg?branch=master)](https://coveralls.io/github/MarioRuiz/nice_hash?branch=master)
 ![Gem](https://img.shields.io/gem/dt/nice_hash)
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/y/MarioRuiz/nice_hash)
